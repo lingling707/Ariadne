@@ -1,0 +1,11 @@
+﻿I'm sorry, but errors were detected in your script. Please correct the
+errors listed below, and try again.
+
+
+File "game/script.rpy", line 4: EOL while scanning string literal
+(Perhaps you left out a " at the end of the first line.)
+    "AriTitle.png
+                 ^
+    
+
+Ren'Py Version: Ren'Py 6.99.9.1168
