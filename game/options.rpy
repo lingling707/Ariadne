@@ -17,12 +17,12 @@ init -1 python hide:
     ## This controls the title of the window, when Ren'Py is
     ## running in a window.
 
-    config.window_title = u"Ariadne 0.0.1c.7716"
+    config.window_title = u"Ariadne 0.0.1f.7716"
 
     # These control the name and version of the game, that are reported
     # with tracebacks and other debugging logs.
     config.name = "Ariadne"
-    config.version = "0.0.1c.7716"
+    config.version = "0.0.1f.7716"
 
     #########################################
     # Themes
@@ -167,7 +167,7 @@ init -1 python hide:
 
     ## Sounds that are used when button and imagemaps are clicked.
 
-    ##style.button.activate_sound = "click.wav"
+    style.button.activate_sound = "Select.wav"
     # style.imagemap.activate_sound = "click.wav"
 
     ## Sounds that are used when entering and exiting the game menu.
