@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Thu Jul 07 22:43:02 2016
 Windows-7-6.1.7601-SP1
 Ren'Py 6.99.10.1227
@@ -8,6 +9,18 @@ Early init took 0.02s
 Loader init took 0.01s
 Loading error handling took 0.04s
 Loading script took 0.97s
+=======
+Thu Jul 07 22:43:28 2016
+Windows-8-6.2.9200
+Ren'Py 6.99.9.1168
+ 
+
+Bootstrap to the start of init.init took 0.05s
+Early init took 0.01s
+Loader init took 0.02s
+Loading error handling took 0.01s
+Loading script took 0.06s
+>>>>>>> refs/remotes/origin/master
 Loading persistent took 0.00s
 Importing _renpysteam: ImportError('No module named _renpysteam',)
 Running init code took 0.14s
@@ -382,6 +395,7 @@ Texture testing:
 - 512px textures work.
 - 1024px textures work.
 - 2048px textures work.
+<<<<<<< HEAD
 Total time until interface ready: 2.10699987411s
 - Target is 5 frames in 0.333333333333 seconds.
 - Frame drawn at 0.000000 seconds.
@@ -390,3 +404,20 @@ Total time until interface ready: 2.10699987411s
 - Frame drawn at 0.060000 seconds.
 - Frame drawn at 0.077000 seconds.
 - 0.077000 seconds to render 5 frames.
+=======
+Total time until interface ready: 0.663000106812s
+- Target is 5 frames in 0.333333333333 seconds.
+- Frame drawn at 0.000000 seconds.
+- Frame drawn at 0.031000 seconds.
+- Frame drawn at 0.032000 seconds.
+- Frame drawn at 0.038000 seconds.
+- Frame drawn at 0.055000 seconds.
+- 0.055000 seconds to render 5 frames.
+Cleaning stores took 0.00s
+Init translation took 0.05s
+Build styles took 0.00s
+Load screen analysis took 0.01s
+Analyze screens took 0.00s
+Prepare screens took 0.00s
+Running _start took 0.00s
+>>>>>>> refs/remotes/origin/master
