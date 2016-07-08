@@ -1,7 +1,7 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
 While running game code:
-Exception: Style 'AriTitle.png' does not exist.
+IOError: Couldn't find file 'Select.wav'.
 
 -- Full Traceback ------------------------------------------------------------
 
@@ -18,33 +18,20 @@ Full traceback:
     rv = renpy.game.interface.interact(roll_forward=roll_forward, **kwargs)
   File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 2425, in interact
     repeat, rv = self.interact_core(preloads=preloads, **kwargs)
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 2691, in interact_core
-    root_widget.visit_all(lambda i : i.per_interact())
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 396, in visit_all
-    d.visit_all(callback)
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 396, in visit_all
-    d.visit_all(callback)
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 396, in visit_all
-    d.visit_all(callback)
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\screen.py", line 390, in visit_all
-    self.child.visit_all(callback)
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 396, in visit_all
-    d.visit_all(callback)
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 393, in visit_all
-    for d in self.visit():
-  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\layout.py", line 968, in visit
-    return [ self.style.background ] + self.children
-  File "module/gen/styleclass.pxi", line 133, in renpy.styledata.styleclass.Style.background.__get__ (gen\renpy.styledata.styleclass.c:4430)
-  File "renpy/style.pyx", line 475, in renpy.style.StyleCore._get (gen\renpy.style.c:7411)
-    build_style(self)
-  File "renpy/style.pyx", line 660, in renpy.style.build_style (gen\renpy.style.c:10202)
-    s.down_parent = get_full_style(s.parent)
-  File "renpy/style.pyx", line 132, in renpy.style.get_full_style (gen\renpy.style.c:2399)
-    rv = get_style(name[0])
-  File "renpy/style.pyx", line 83, in renpy.style.get_style (gen\renpy.style.c:1663)
-    raise Exception("Style %r does not exist." % name)
-Exception: Style 'AriTitle.png' does not exist.
+  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\display\core.py", line 2722, in interact_core
+    renpy.audio.audio.interact()
+  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\audio\audio.py", line 913, in interact
+    periodic()
+  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\audio\audio.py", line 847, in periodic
+    c.periodic()
+  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\audio\audio.py", line 400, in periodic
+    topf = load(self.file_prefix + filename + self.file_suffix)
+  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\audio\audio.py", line 66, in load
+    rv = renpy.loader.load(fn)
+  File "C:\Users\Ling\Desktop\renpy-6.99.9-sdk\renpy\loader.py", line 533, in load
+    raise IOError("Couldn't find file '%s'." % name)
+IOError: Couldn't find file 'Select.wav'.
 
 Windows-8-6.2.9200
 Ren'Py 6.99.9.1168
-Ariadne 0.0.1b.7716
+Ariadne 0.0.1c.7716
