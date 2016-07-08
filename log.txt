@@ -1,44 +1,44 @@
-Thu Jul 07 22:03:20 2016
-Windows-8-6.2.9200
-Ren'Py 6.99.9.1168
+Thu Jul 07 22:43:02 2016
+Windows-7-6.1.7601-SP1
+Ren'Py 6.99.10.1227
  
 
-Bootstrap to the start of init.init took 0.06s
-Early init took 0.01s
-Loader init took 0.02s
-Loading error handling took 0.01s
-Loading script took 0.06s
+Bootstrap to the start of init.init took 0.10s
+Early init took 0.02s
+Loader init took 0.01s
+Loading error handling took 0.04s
+Loading script took 0.97s
 Loading persistent took 0.00s
 Importing _renpysteam: ImportError('No module named _renpysteam',)
-Running init code took 0.07s
+Running init code took 0.14s
 Loading analysis data took 0.01s
 Analyze and compile ATL took 0.00s
 Index archives took 0.00s
-Dump and make backups. took 0.03s
+Dump and make backups. took 0.06s
 Cleaning cache took 0.00s
 Making clean stores took 0.00s
 DPI scale factor: 1.000000
-Creating interface object took 0.03s
+Creating interface object took 0.04s
 Cleaning stores took 0.00s
 Init translation took 0.00s
 Build styles took 0.00s
-Load screen analysis took 0.01s
-Analyze screens took 0.00s
-Save screen analysis took 0.00s
-Prepare screens took 0.04s
-Save pyanalysis. took 0.00s
-Save bytecode. took 0.00s
+Load screen analysis took 0.00s
+Analyze screens took 0.01s
+Save screen analysis took 0.04s
+Prepare screens took 0.05s
+Save pyanalysis. took 0.05s
+Save bytecode. took 0.03s
 Running _start took 0.00s
 Performance test:
-Interface start took 0.00s
+Interface start took 0.01s
 
-primary display bounds: (0, 0, 1920, 1080)
+primary display bounds: (0, 0, 1366, 768)
 Windowed mode.
 Screen sizes: virtual=(800, 600) physical=(800, 600) drawable=(800, 600)
 Vendor: 'NVIDIA Corporation'
-Renderer: 'GeForce GTX 750 Ti/PCIe/SSE2'
-Version: '4.5.0 NVIDIA 368.69'
-Display Info: <Info({'blit_sw_CC': False, 'bitsize': 32, 'wm': True, 'losses': (0, 0, 0, 8), 'hw': False, 'masks': (16711680L, 65280L, 255L, 0L), 'current_h': 1080, 'current_w': 1920, 'shifts': (16, 8, 0, 0), 'blit_sw_A': False, 'blit_hw': False, 'blit_sw': False, 'bytesize': 4, 'blit_hw_CC': False, 'blit_hw_A': False, 'video_mem': 268435456})>
+Renderer: 'GeForce GTX 750/PCIe/SSE2'
+Version: '4.5.0 NVIDIA 368.39'
+Display Info: <Info({'blit_sw_CC': False, 'bitsize': 32, 'wm': True, 'losses': (0, 0, 0, 8), 'hw': False, 'masks': (16711680L, 65280L, 255L, 0L), 'current_h': 768, 'current_w': 1366, 'shifts': (16, 8, 0, 0), 'blit_sw_A': False, 'blit_hw': False, 'blit_sw': False, 'bytesize': 4, 'blit_hw_CC': False, 'blit_hw_A': False, 'video_mem': 268435456})>
 Fixed-function is blacklisted.
 Extensions:
     
@@ -382,32 +382,11 @@ Texture testing:
 - 512px textures work.
 - 1024px textures work.
 - 2048px textures work.
-Total time until interface ready: 0.68499994278s
+Total time until interface ready: 2.10699987411s
 - Target is 5 frames in 0.333333333333 seconds.
 - Frame drawn at 0.000000 seconds.
-- Frame drawn at 0.037000 seconds.
-- Frame drawn at 0.038000 seconds.
-- Frame drawn at 0.038000 seconds.
-- Frame drawn at 0.055000 seconds.
-- 0.055000 seconds to render 5 frames.
-Cleaning stores took 0.00s
-Init translation took 0.05s
-Build styles took 0.00s
-Load screen analysis took 0.01s
-Analyze screens took 0.00s
-Prepare screens took 0.00s
-Running _start took 0.00s
-Cleaning stores took 0.00s
-Init translation took 0.05s
-Build styles took 0.00s
-Load screen analysis took 0.01s
-Analyze screens took 0.00s
-Prepare screens took 0.00s
-Running _start took 0.00s
-Cleaning stores took 0.00s
-Init translation took 0.05s
-Build styles took 0.00s
-Load screen analysis took 0.01s
-Analyze screens took 0.00s
-Prepare screens took 0.00s
-Running _start took 0.00s
+- Frame drawn at 0.050000 seconds.
+- Frame drawn at 0.052000 seconds.
+- Frame drawn at 0.060000 seconds.
+- Frame drawn at 0.077000 seconds.
+- 0.077000 seconds to render 5 frames.
