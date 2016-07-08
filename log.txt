@@ -1,34 +1,33 @@
-Thu Jul 07 17:22:42 2016
+Thu Jul 07 22:02:08 2016
 Windows-8-6.2.9200
-Ren'Py 6.99.9.1168
+Ren'Py 6.99.10.1227
  
 
-Bootstrap to the start of init.init took 0.05s
+Bootstrap to the start of init.init took 0.07s
 Early init took 0.01s
-Loader init took 0.01s
-Loading error handling took 0.01s
-Loading script took 0.08s
+Loader init took 0.04s
+Loading error handling took 0.02s
+Loading script took 0.34s
 Loading persistent took 0.00s
 Importing _renpysteam: ImportError('No module named _renpysteam',)
-Running init code took 0.07s
-Loading analysis data took 0.01s
+Running init code took 0.18s
+Loading analysis data took 0.03s
 Analyze and compile ATL took 0.00s
 Index archives took 0.00s
-Backing up script files to 'C:\\Users\\Ling\\AppData\\Roaming/RenPy/backups\\Ariadne':
-Dump and make backups. took 0.03s
+Dump and make backups. took 0.00s
 Cleaning cache took 0.00s
 Making clean stores took 0.00s
 DPI scale factor: 1.000000
-Creating interface object took 0.03s
+Creating interface object took 0.01s
 Cleaning stores took 0.00s
 Init translation took 0.00s
 Build styles took 0.00s
-Load screen analysis took 0.00s
-Analyze screens took 0.01s
-Save screen analysis took 0.03s
-Prepare screens took 0.03s
+Load screen analysis took 0.01s
+Analyze screens took 0.00s
+Save screen analysis took 0.00s
+Prepare screens took 0.05s
 Save pyanalysis. took 0.00s
-Save bytecode. took 0.03s
+Save bytecode. took 0.00s
 Running _start took 0.00s
 Performance test:
 Interface start took 0.01s
@@ -37,14 +36,16 @@ primary display bounds: (0, 0, 1920, 1080)
 Windowed mode.
 Screen sizes: virtual=(800, 600) physical=(800, 600) drawable=(800, 600)
 Vendor: 'NVIDIA Corporation'
-Renderer: 'GeForce GTX 750 Ti/PCIe/SSE2'
-Version: '4.5.0 NVIDIA 368.69'
+Renderer: 'GeForce GTX 970/PCIe/SSE2'
+Version: '4.5.0 NVIDIA 368.39'
 Display Info: <Info({'blit_sw_CC': False, 'bitsize': 32, 'wm': True, 'losses': (0, 0, 0, 8), 'hw': False, 'masks': (16711680L, 65280L, 255L, 0L), 'current_h': 1080, 'current_w': 1920, 'shifts': (16, 8, 0, 0), 'blit_sw_A': False, 'blit_hw': False, 'blit_sw': False, 'bytesize': 4, 'blit_hw_CC': False, 'blit_hw_A': False, 'video_mem': 268435456})>
 Fixed-function is blacklisted.
 Extensions:
     
     GL_AMD_multi_draw_indirect
     GL_AMD_seamless_cubemap_per_texture
+    GL_AMD_vertex_shader_layer
+    GL_AMD_vertex_shader_viewport_index
     GL_ARB_ES2_compatibility
     GL_ARB_ES3_1_compatibility
     GL_ARB_ES3_2_compatibility
@@ -86,6 +87,7 @@ Extensions:
     GL_ARB_fragment_program
     GL_ARB_fragment_program_shadow
     GL_ARB_fragment_shader
+    GL_ARB_fragment_shader_interlock
     GL_ARB_framebuffer_no_attachments
     GL_ARB_framebuffer_object
     GL_ARB_framebuffer_sRGB
@@ -116,11 +118,13 @@ Extensions:
     GL_ARB_pixel_buffer_object
     GL_ARB_point_parameters
     GL_ARB_point_sprite
+    GL_ARB_post_depth_coverage
     GL_ARB_program_interface_query
     GL_ARB_provoking_vertex
     GL_ARB_query_buffer_object
     GL_ARB_robust_buffer_access_behavior
     GL_ARB_robustness
+    GL_ARB_sample_locations
     GL_ARB_sample_shading
     GL_ARB_sampler_objects
     GL_ARB_seamless_cube_map
@@ -141,6 +145,7 @@ Extensions:
     GL_ARB_shader_subroutine
     GL_ARB_shader_texture_image_samples
     GL_ARB_shader_texture_lod
+    GL_ARB_shader_viewport_layer_array
     GL_ARB_shading_language_100
     GL_ARB_shading_language_420pack
     GL_ARB_shading_language_include
@@ -148,6 +153,8 @@ Extensions:
     GL_ARB_shadow
     GL_ARB_sparse_buffer
     GL_ARB_sparse_texture
+    GL_ARB_sparse_texture2
+    GL_ARB_sparse_texture_clamp
     GL_ARB_stencil_texturing
     GL_ARB_sync
     GL_ARB_tessellation_shader
@@ -165,6 +172,7 @@ Extensions:
     GL_ARB_texture_env_combine
     GL_ARB_texture_env_crossbar
     GL_ARB_texture_env_dot3
+    GL_ARB_texture_filter_minmax
     GL_ARB_texture_float
     GL_ARB_texture_gather
     GL_ARB_texture_mirror_clamp_to_edge
@@ -235,7 +243,9 @@ Extensions:
     GL_EXT_pixel_buffer_object
     GL_EXT_point_parameters
     GL_EXT_polygon_offset_clamp
+    GL_EXT_post_depth_coverage
     GL_EXT_provoking_vertex
+    GL_EXT_raster_multisample
     GL_EXT_rescale_normal
     GL_EXT_secondary_color
     GL_EXT_separate_shader_objects
@@ -244,6 +254,7 @@ Extensions:
     GL_EXT_shader_image_load_store
     GL_EXT_shader_integer_mix
     GL_EXT_shadow_funcs
+    GL_EXT_sparse_texture2
     GL_EXT_stencil_two_side
     GL_EXT_stencil_wrap
     GL_EXT_texture3D
@@ -259,6 +270,7 @@ Extensions:
     GL_EXT_texture_env_combine
     GL_EXT_texture_env_dot3
     GL_EXT_texture_filter_anisotropic
+    GL_EXT_texture_filter_minmax
     GL_EXT_texture_integer
     GL_EXT_texture_lod
     GL_EXT_texture_lod_bias
@@ -299,6 +311,8 @@ Extensions:
     GL_NV_command_list
     GL_NV_compute_program5
     GL_NV_conditional_render
+    GL_NV_conservative_raster
+    GL_NV_conservative_raster_dilate
     GL_NV_copy_depth_to_color
     GL_NV_copy_image
     GL_NV_depth_buffer_float
@@ -307,13 +321,18 @@ Extensions:
     GL_NV_draw_vulkan_image
     GL_NV_explicit_multisample
     GL_NV_fence
+    GL_NV_fill_rectangle
     GL_NV_float_buffer
     GL_NV_fog_distance
+    GL_NV_fragment_coverage_to_color
     GL_NV_fragment_program
     GL_NV_fragment_program2
     GL_NV_fragment_program_option
+    GL_NV_fragment_shader_interlock
+    GL_NV_framebuffer_mixed_samples
     GL_NV_framebuffer_multisample_coverage
     GL_NV_geometry_shader4
+    GL_NV_geometry_shader_passthrough
     GL_NV_gpu_program4
     GL_NV_gpu_program4_1
     GL_NV_gpu_program5
@@ -330,13 +349,17 @@ Extensions:
     GL_NV_parameter_buffer_object
     GL_NV_parameter_buffer_object2
     GL_NV_path_rendering
+    GL_NV_path_rendering_shared_edge
     GL_NV_pixel_data_range
     GL_NV_point_sprite
     GL_NV_primitive_restart
     GL_NV_register_combiners
     GL_NV_register_combiners2
+    GL_NV_sample_locations
+    GL_NV_sample_mask_override_coverage
     GL_NV_shader_atomic_counters
     GL_NV_shader_atomic_float
+    GL_NV_shader_atomic_fp16_vector
     GL_NV_shader_atomic_int64
     GL_NV_shader_buffer_load
     GL_NV_shader_storage_buffer_object
@@ -363,6 +386,8 @@ Extensions:
     GL_NV_vertex_program2
     GL_NV_vertex_program2_option
     GL_NV_vertex_program3
+    GL_NV_viewport_array2
+    GL_NV_viewport_swizzle
     GL_S3_s3tc
     GL_SGIS_generate_mipmap
     GL_SGIS_texture_lod
@@ -383,18 +408,11 @@ Texture testing:
 - 512px textures work.
 - 1024px textures work.
 - 2048px textures work.
-Total time until interface ready: 0.733000040054s
+Total time until interface ready: 1.11699986458s
 - Target is 5 frames in 0.333333333333 seconds.
 - Frame drawn at 0.000000 seconds.
-- Frame drawn at 0.029000 seconds.
-- Frame drawn at 0.030000 seconds.
+- Frame drawn at 0.026000 seconds.
+- Frame drawn at 0.028000 seconds.
 - Frame drawn at 0.033000 seconds.
 - Frame drawn at 0.050000 seconds.
 - 0.050000 seconds to render 5 frames.
-Cleaning stores took 0.00s
-Init translation took 0.05s
-Build styles took 0.00s
-Load screen analysis took 0.01s
-Analyze screens took 0.00s
-Prepare screens took 0.00s
-Running _start took 0.00s

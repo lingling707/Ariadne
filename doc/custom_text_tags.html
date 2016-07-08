@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Custom Text Tags &mdash; Ren&#39;Py Documentation</title>
+    <link rel="stylesheet" href="_static/screen.css" type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="print" />
+
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="screen, projection"/>
+    <![endif]-->
+
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '6.99.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Ren&#39;Py Documentation" href="index.html" />
+    <link rel="next" title="Character Callbacks" href="character_callbacks.html" />
+    <link rel="prev" title="Creator-Defined Statements" href="cds.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="character_callbacks.html" title="Character Callbacks"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cds.html" title="Creator-Defined Statements"
+             accesskey="P">previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+  <div class="container">
+  <div class="span4">
+    
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Custom Text Tags</a><ul>
+<li><a class="reference internal" href="#caveats">Caveats</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cds.html"
+                        title="previous chapter">Creator-Defined Statements</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="character_callbacks.html"
+                        title="next chapter">Character Callbacks</a></p>
+            <h4>Search</h4>
+            
+            <div id="cse-search-form" style="width: 100%;"></div>
+
+      <div class="copydata">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    <br>
+      </div>
+        </div>
+      </div>
+  
+  </div>
+
+
+    <div class="document span20 last">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="custom-text-tags">
+<span id="id1"></span><h1>Custom Text Tags<a class="headerlink" href="#custom-text-tags" title="Permalink to this headline">¶</a></h1>
+<p>Ren'Py has support for defining your own text tags. These text tags
+can manipulate the text and text tags defined within, including adding
+and removing text and other text tags.</p>
+<p>Custom text tags are created by assigning a text tag function to an
+entry in the config.custom_text_tags dictionary.</p>
+<dl class="var">
+<dt id="var-config.custom_text_tags">
+<tt class="descname">config.custom_text_tags</tt><a class="headerlink" href="#var-config.custom_text_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps text tag names to text tag functions.</p>
+</dd></dl>
+
+<p>A text tag function takes three arguments: The tag itself, the argument
+for the tag, and a list of content tuples. For example, for the text:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="s">&quot;{big=2}Hello, {b}World{/b}{/big}&quot;</span>
+</pre></div>
+</div>
+<p>The tag will be &quot;big&quot;, the argument will be the string &quot;2&quot;, and the list
+of content tuples will be:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">(</span><span class="n">renpy</span><span class="o">.</span><span class="n">TEXT_TEXT</span><span class="p">,</span> <span class="s">&quot;Hello, &quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">renpy</span><span class="o">.</span><span class="n">TEXT_TAG</span><span class="p">,</span> <span class="s">&quot;b&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">renpy</span><span class="o">.</span><span class="n">TEXT_TEXT</span><span class="p">,</span> <span class="s">&quot;World&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">renpy</span><span class="o">.</span><span class="n">TEXT_TAG</span><span class="p">,</span> <span class="s">&quot;/b&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The text tag function should return a new list of content tuples, which
+is used to replace the text tag and its contents.</p>
+<p>Content tuples consist of two components. The first component is one of the
+the constants in the following list. The second component varies based on
+the first component, as describe below.</p>
+<p>renpy.TEXT_TEXT</p>
+<blockquote>
+<div>The second component is text that is intended for display to the user.</div></blockquote>
+<p>renpy.TEXT_TAG</p>
+<blockquote>
+<div>The second component is the contents of a text tag, without the
+enclosing braces.</div></blockquote>
+<p>renpy.TEXT_DISPLAYABLE</p>
+<blockquote>
+<div>The second component is a displayable to be embedded into the text.</div></blockquote>
+<p>renpy.TEXT_PARAGRAPH</p>
+<blockquote>
+<div>This represents a break between paragraphs, and the second component
+is undefined (but must be present).</div></blockquote>
+<div class="section" id="caveats">
+<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
+<p>The dialogue text tags {p}, {w}, {nw}, and {fast} are processed before
+custom text tags, and should either be not included inside a custom
+text tag, or passed through unchanged.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The example big text tag works like the {size} text tag, but applies a
+multiplier to its argument.</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">init</span> <span class="k">python</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">big_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
+
+        <span class="na">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span> <span class="o">*</span> <span class="mi">20</span>
+
+        <span class="k">return</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">renpy</span><span class="o">.</span><span class="n">TEXT_TAG</span><span class="p">,</span> <span class="s">u&quot;size={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="na">size</span><span class="p">)),</span>
+            <span class="p">]</span> <span class="o">+</span> <span class="n">contents</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">renpy</span><span class="o">.</span><span class="n">TEXT_TAG</span><span class="p">,</span> <span class="s">u&quot;/size&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+
+    <span class="n">config</span><span class="o">.</span><span class="n">custom_text_tags</span><span class="p">[</span><span class="s">&quot;big&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">big_tag</span>
+
+
+<span class="s">&quot;This is {big=3}BIG!{/big}&quot;</span>
+</pre></div>
+</div>
+<p>The example rot13 text tag applies the rot13 transform to text. Note that
+rot26 - rot13 applied twice - is just normal text.</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">init</span> <span class="k">python</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">rot13_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="p">[</span> <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="k">text</span> <span class="k">in</span> <span class="n">contents</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">renpy</span><span class="o">.</span><span class="n">TEXT_TEXT</span><span class="p">:</span>
+                <span class="k">text</span> <span class="o">=</span> <span class="k">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;rot13&quot;</span><span class="p">)</span>
+
+            <span class="n">rv</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">kind</span><span class="p">,</span> <span class="k">text</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">rv</span>
+
+    <span class="n">config</span><span class="o">.</span><span class="n">custom_text_tags</span><span class="p">[</span><span class="s">&quot;rot13&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot13_tag</span>
+
+<span class="s">&quot;Rot0. {rot13}Rot13. {rot13}Rot26. {/rot13}Rot13. {/rot13}Rot0.&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="character_callbacks.html" title="Character Callbacks"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cds.html" title="Creator-Defined Statements"
+             >previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+
+
+	<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+	<script type="text/javascript">
+	  google.load('search', '1', {language : 'en' });
+	  google.setOnLoadCallback(function() {
+	    var customSearchControl = new google.search.CustomSearchControl('012476843541036121001:gx3sqkoaxkm');
+	    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+	    var options = new google.search.DrawOptions();
+	    options.enableSearchboxOnly("https://www.google.com/cse?cx=012476843541036121001:gx3sqkoaxkm");
+	    customSearchControl.draw('cse-search-form', options);
+	  }, true);
+	</script>
+
+  </body>
+</html>

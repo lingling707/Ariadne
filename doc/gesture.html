@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Gestures &mdash; Ren&#39;Py Documentation</title>
+    <link rel="stylesheet" href="_static/screen.css" type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="print" />
+
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="screen, projection"/>
+    <![endif]-->
+
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '6.99.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Ren&#39;Py Documentation" href="index.html" />
+    <link rel="next" title="Dealing with Problems" href="problems.html" />
+    <link rel="prev" title="In-App Purchasing" href="iap.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="problems.html" title="Dealing with Problems"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="iap.html" title="In-App Purchasing"
+             accesskey="P">previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+  <div class="container">
+  <div class="span4">
+    
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="iap.html"
+                        title="previous chapter">In-App Purchasing</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="problems.html"
+                        title="next chapter">Dealing with Problems</a></p>
+            <h4>Search</h4>
+            
+            <div id="cse-search-form" style="width: 100%;"></div>
+
+      <div class="copydata">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    <br>
+      </div>
+        </div>
+      </div>
+  
+  </div>
+
+
+    <div class="document span20 last">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gestures">
+<h1>Gestures<a class="headerlink" href="#gestures" title="Permalink to this headline">¶</a></h1>
+<p>Ren'Py includes a gesture recognizer that is enabled when a touchscreen
+is used. This makes it possible for gestures to functions that would
+otherwise require a keyboard and mouse.</p>
+<p>The gesture recognizer first classifies swipes into 8 compass directions,
+&quot;n&quot;, &quot;ne&quot;, &quot;e&quot;, &quot;se&quot;, &quot;s&quot;, &quot;sw&quot;, &quot;w&quot;, &quot;nw&quot;. North is considered to be
+towards the top of the screen. It then concatenates the swipes into a string
+using the &quot;_&quot; as a delimiter. For example, if the player swipes down and
+to the right, the string &quot;s_e&quot; will be produced.</p>
+<p>Assuming <a class="reference internal" href="#var-config.dispatch_gesture"><tt class="xref std std-var docutils literal"><span class="pre">config.dispatch_gesture</span></tt></a> is None, what happens next is that
+gesture is mapped to an event using <a class="reference internal" href="#var-config.gestures"><tt class="xref std std-var docutils literal"><span class="pre">config.gestures</span></tt></a>. If it is found,
+it is queued using <a class="reference internal" href="other.html#renpy.queue_event" title="renpy.queue_event"><tt class="xref py py-func docutils literal"><span class="pre">renpy.queue_event()</span></tt></a>. Otherwise, the gesture is
+ignored.</p>
+<p>Gesture recognition is only enabled when &quot;touch&quot; is present in
+<a class="reference internal" href="config.html#var-config.variants"><tt class="xref std std-var docutils literal"><span class="pre">config.variants</span></tt></a>, which should be the case when running on
+a touchscreen device.</p>
+<dl class="var">
+<dt id="var-config.gestures">
+<tt class="descname">config.gestures</tt> = { &quot;n_s_w_e_w_e&quot; : &quot;progress_screen&quot; }<a class="headerlink" href="#var-config.gestures" title="Permalink to this definition">¶</a></dt>
+<dd><p>A map from gesture to the event activated by the gesture.</p>
+</dd></dl>
+
+<dl class="var">
+<dt id="var-config.dispatch_gesture">
+<tt class="descname">config.dispatch_gesture</tt> = None<a class="headerlink" href="#var-config.dispatch_gesture" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function that is used to dispatch gestures. This function is
+passed the raw gesture string. If it returns non-None, the
+interaction ends. If this variable is None, a default dispatch
+function is used.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="renpy.cancel_gesture">
+<tt class="descclassname">renpy.</tt><tt class="descname">cancel_gesture</tt><big>(</big><big>)</big><a class="headerlink" href="#renpy.cancel_gesture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancels the current gesture, preventing the gesture from being recognized.
+This should be called by displayables that have gesture-like behavior.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="problems.html" title="Dealing with Problems"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="iap.html" title="In-App Purchasing"
+             >previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+
+
+	<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+	<script type="text/javascript">
+	  google.load('search', '1', {language : 'en' });
+	  google.setOnLoadCallback(function() {
+	    var customSearchControl = new google.search.CustomSearchControl('012476843541036121001:gx3sqkoaxkm');
+	    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+	    var options = new google.search.DrawOptions();
+	    options.enableSearchboxOnly("https://www.google.com/cse?cx=012476843541036121001:gx3sqkoaxkm");
+	    customSearchControl.draw('cse-search-form', options);
+	  }, true);
+	</script>
+
+  </body>
+</html>

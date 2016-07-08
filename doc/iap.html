@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>In-App Purchasing &mdash; Ren&#39;Py Documentation</title>
+    <link rel="stylesheet" href="_static/screen.css" type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="print" />
+
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="screen, projection"/>
+    <![endif]-->
+
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '6.99.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Ren&#39;Py Documentation" href="index.html" />
+    <link rel="next" title="Gestures" href="gesture.html" />
+    <link rel="prev" title="iOS" href="ios.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gesture.html" title="Gestures"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ios.html" title="iOS"
+             accesskey="P">previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+  <div class="container">
+  <div class="span4">
+    
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">In-App Purchasing</a><ul>
+<li><a class="reference internal" href="#iap-functions">IAP Functions</a></li>
+<li><a class="reference internal" href="#iap-actions">IAP Actions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ios.html"
+                        title="previous chapter">iOS</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gesture.html"
+                        title="next chapter">Gestures</a></p>
+            <h4>Search</h4>
+            
+            <div id="cse-search-form" style="width: 100%;"></div>
+
+      <div class="copydata">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    <br>
+      </div>
+        </div>
+      </div>
+  
+  </div>
+
+
+    <div class="document span20 last">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="in-app-purchasing">
+<h1>In-App Purchasing<a class="headerlink" href="#in-app-purchasing" title="Permalink to this headline">¶</a></h1>
+<p>Ren'Py includes a high-level in-app purchasing framework. This framework
+currently only supports unlock-style purchases from the Apple App Store,
+Google Play, and the Amazon App Store.</p>
+<p>Using this framework is fairly simple, and consists of the following
+functions.</p>
+<ul class="simple">
+<li>In the init phase of your game, register available purchases using the
+<a class="reference internal" href="#iap.register" title="iap.register"><tt class="xref py py-func docutils literal"><span class="pre">iap.register()</span></tt></a> function.</li>
+<li>Once the game has started, check to see if a purchase has been purchased
+using the <a class="reference internal" href="#iap.has_purchased" title="iap.has_purchased"><tt class="xref py py-func docutils literal"><span class="pre">iap.has_purchased()</span></tt></a> function.</li>
+<li>Allow the user to purchase an item using the <a class="reference internal" href="#iap.purchase" title="iap.purchase"><tt class="xref py py-func docutils literal"><span class="pre">iap.purchase()</span></tt></a> function
+or the <a class="reference internal" href="#iap.Purchase" title="iap.Purchase"><tt class="xref py py-func docutils literal"><span class="pre">iap.Purchase()</span></tt></a> action.</li>
+<li>Allow the user to restore purchases bought on other devices using the
+<a class="reference internal" href="#iap.restore" title="iap.restore"><tt class="xref py py-func docutils literal"><span class="pre">iap.restore()</span></tt></a> function or the <a class="reference internal" href="#iap.Restore" title="iap.Restore"><tt class="xref py py-func docutils literal"><span class="pre">iap.Restore()</span></tt></a> action.</li>
+</ul>
+<p>To offer in-app purchases, the purchases (including an associated price)
+must be set up on the various marketplaces. When building for android,
+Ren'Py will ask for the marketplace in use when configuring the package.</p>
+<dl class="docutils">
+<dt>Apple App Store</dt>
+<dd>The Apple App Store is based on the package name, and does not require
+special configuration.</dd>
+<dt>Google Play</dt>
+<dd>Before Google Play can be used, you must add the google play key and
+a salt to your project. See the <a class="reference internal" href="android-packaging.html#expansion-apk"><em>Expansion APK</em></a>
+section for information on how to do this.</dd>
+<dt>Amazon App Store</dt>
+<dd>The Amazon app store is based on the package name, and does not
+require special configuration.</dd>
+</dl>
+<div class="section" id="iap-functions">
+<h2>IAP Functions<a class="headerlink" href="#iap-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="iap.get_price">
+<tt class="descclassname">iap.</tt><tt class="descname">get_price</tt><big>(</big><em>product</em><big>)</big><a class="headerlink" href="#iap.get_price" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string giving the price of the <cite>product</cite> in the user's
+local currency. Returns None if the price of the product is unknown -
+which indicates the product cannot be purchased.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="iap.get_store_name">
+<tt class="descclassname">iap.</tt><tt class="descname">get_store_name</tt><big>(</big><big>)</big><a class="headerlink" href="#iap.get_store_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the enabled store for in-app purchase. This
+currently returns one of &quot;amazon&quot;, &quot;google&quot;, &quot;ios&quot; or None if no store
+is available.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="iap.has_purchased">
+<tt class="descclassname">iap.</tt><tt class="descname">has_purchased</tt><big>(</big><em>product</em><big>)</big><a class="headerlink" href="#iap.has_purchased" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the user has purchased <cite>product</cite> in the past, and
+False otherwise.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="iap.is_deferred">
+<tt class="descclassname">iap.</tt><tt class="descname">is_deferred</tt><big>(</big><em>product</em><big>)</big><a class="headerlink" href="#iap.is_deferred" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the user has asked to purchase <cite>product</cite>, but that
+request has to be approved by a third party, such as a parent or
+guardian.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="iap.purchase">
+<tt class="descclassname">iap.</tt><tt class="descname">purchase</tt><big>(</big><em>product</em>, <em>interact=True</em><big>)</big><a class="headerlink" href="#iap.purchase" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function requests the purchase of <cite>product</cite>.</p>
+<p>It returns true if the purchase succeeds, or false if the purchase
+fails. If the product has been registered as consumable, the purchase
+is consumed before this call returns.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="iap.register">
+<tt class="descclassname">iap.</tt><tt class="descname">register</tt><big>(</big><em>product</em>, <em>identifier=None</em>, <em>amazon=None</em>, <em>google=None</em>, <em>ios=None</em>, <em>consumable=False</em><big>)</big><a class="headerlink" href="#iap.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers a product with the in-app purchase system.</p>
+<dl class="docutils">
+<dt><cite>product</cite></dt>
+<dd>A string giving the high-level name of the product. This is the
+string that will be passed to <a class="reference internal" href="#iap.purchase" title="iap.purchase"><tt class="xref py py-func docutils literal"><span class="pre">iap.purchase()</span></tt></a>, <a class="reference internal" href="#iap.Purchase" title="iap.Purchase"><tt class="xref py py-func docutils literal"><span class="pre">iap.Purchase()</span></tt></a>,
+and <a class="reference internal" href="#iap.has_purchased" title="iap.has_purchased"><tt class="xref py py-func docutils literal"><span class="pre">iap.has_purchased()</span></tt></a> to represent this product.</dd>
+<dt><cite>identifier</cite></dt>
+<dd><p class="first">A string that's used to identify the product internally. Once used
+to represent a product, this must never change. These strings are
+generall of the form &quot;com.domain.game.product&quot;.</p>
+<p class="last">If None, defaults to <cite>product</cite>.</p>
+</dd>
+<dt><cite>amazon</cite></dt>
+<dd>A string that identifies the product in the Amazon app store.
+If not given, defaults to <cite>identifier</cite>.</dd>
+<dt><cite>google</cite></dt>
+<dd>A string that identifies the product in the Google Play store.
+If not given, defaults to <cite>identifier</cite>.</dd>
+<dt><cite>ios</cite></dt>
+<dd>A string that identifies the product in the Apple App store for
+iOS. If not given, defaults to <cite>identifier</cite>.</dd>
+<dt><cite>consumable</cite></dt>
+<dd>True if this is a consumable purchase. Right now, consumable purchases
+are only supported on iOS.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="iap.restore">
+<tt class="descclassname">iap.</tt><tt class="descname">restore</tt><big>(</big><em>interact=True</em><big>)</big><a class="headerlink" href="#iap.restore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contacts the app store and restores any missing purchases.</p>
+<dl class="docutils">
+<dt><cite>interact</cite></dt>
+<dd>If True, renpy.pause will be called while waiting for the app store
+to respond.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="iap-actions">
+<h2>IAP Actions<a class="headerlink" href="#iap-actions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="iap.Purchase">
+<tt class="descclassname">iap.</tt><tt class="descname">Purchase</tt><big>(</big><em>product</em>, <em>success=None</em><big>)</big><a class="headerlink" href="#iap.Purchase" title="Permalink to this definition">¶</a></dt>
+<dd><p>An action that attempts the purchase of <cite>product</cite>. This action is
+sensitive iff and only if the product is purchasable (a store is
+enabled, and the product has not already been purchased.)</p>
+<dl class="docutils">
+<dt><cite>success</cite></dt>
+<dd>If not None, this is an action or list of actions that are tun
+when the purchase succeeds.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="iap.Restore">
+<tt class="descclassname">iap.</tt><tt class="descname">Restore</tt><big>(</big><big>)</big><a class="headerlink" href="#iap.Restore" title="Permalink to this definition">¶</a></dt>
+<dd><p>An Action that contacts the app store and restores any missing purchases.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gesture.html" title="Gestures"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ios.html" title="iOS"
+             >previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+
+
+	<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+	<script type="text/javascript">
+	  google.load('search', '1', {language : 'en' });
+	  google.setOnLoadCallback(function() {
+	    var customSearchControl = new google.search.CustomSearchControl('012476843541036121001:gx3sqkoaxkm');
+	    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+	    var options = new google.search.DrawOptions();
+	    options.enableSearchboxOnly("https://www.google.com/cse?cx=012476843541036121001:gx3sqkoaxkm");
+	    customSearchControl.draw('cse-search-form', options);
+	  }, true);
+	</script>
+
+  </body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Voice &mdash; Ren&#39;Py Documentation</title>
+    <link rel="stylesheet" href="_static/screen.css" type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="print" />
+
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="screen, projection"/>
+    <![endif]-->
+
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '6.99.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Ren&#39;Py Documentation" href="index.html" />
+    <link rel="next" title="Text" href="text.html" />
+    <link rel="prev" title="Movie" href="movie.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="text.html" title="Text"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="movie.html" title="Movie"
+             accesskey="P">previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+  <div class="container">
+  <div class="span4">
+    
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Voice</a><ul>
+<li><a class="reference internal" href="#voice-tags">Voice Tags</a></li>
+<li><a class="reference internal" href="#automatic-voice">Automatic Voice</a></li>
+<li><a class="reference internal" href="#voice-functions">Voice Functions</a></li>
+<li><a class="reference internal" href="#voice-actions">Voice Actions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="movie.html"
+                        title="previous chapter">Movie</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="text.html"
+                        title="next chapter">Text</a></p>
+            <h4>Search</h4>
+            
+            <div id="cse-search-form" style="width: 100%;"></div>
+
+      <div class="copydata">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    <br>
+      </div>
+        </div>
+      </div>
+  
+  </div>
+
+
+    <div class="document span20 last">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="voice">
+<h1>Voice<a class="headerlink" href="#voice" title="Permalink to this headline">¶</a></h1>
+<p>Ren'Py includes support for playing back voice in conjunction with
+dialogue. This is done through the voice statement, which gives the
+voice filename to play:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">voice</span> <span class="s">&quot;line0001.ogg&quot;</span>
+<span class="s">&quot;Welcome to Ren&#39;Py&quot;</span>
+</pre></div>
+</div>
+<p>Normally, a playing voice is stopped at the start of the next
+interaction. The voice sustain statement can sustain voice playback
+through an interaction.</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">voice</span> <span class="s">&quot;line0001.ogg&quot;</span>
+<span class="s">&quot;Welcome to Ren&#39;Py...&quot;</span>
+
+<span class="k">voice</span> <span class="n">sustain</span>
+<span class="s">&quot;... your digital storytelling engine.&quot;</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="config.html#var-config.voice_filename_format"><tt class="xref std std-var docutils literal"><span class="pre">config.voice_filename_format</span></tt></a> variable allows you to customize
+the voice filename, making it possible to omit directories and extensions.</p>
+<div class="section" id="voice-tags">
+<h2>Voice Tags<a class="headerlink" href="#voice-tags" title="Permalink to this headline">¶</a></h2>
+<p>Ren'Py includes a voice tag system that makes it possible to selectively
+mute or unmute a character's voice. To take advantage of this system,
+supply a voice_tag argument to each <a class="reference internal" href="dialogue.html#Character" title="Character"><tt class="xref py py-func docutils literal"><span class="pre">Character()</span></tt></a>, and use the
+<a class="reference internal" href="#SetVoiceMute" title="SetVoiceMute"><tt class="xref py py-func docutils literal"><span class="pre">SetVoiceMute()</span></tt></a> or <a class="reference internal" href="#ToggleVoiceMute" title="ToggleVoiceMute"><tt class="xref py py-func docutils literal"><span class="pre">ToggleVoiceMute()</span></tt></a> actions to allow the
+player to toggle the voice.</p>
+<p>For example:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">define</span> <span class="n">e</span> <span class="o">=</span> <span class="n">Character</span><span class="p">(</span><span class="s">&quot;Eileen&quot;</span><span class="p">,</span> <span class="n">voice_tag</span><span class="o">=</span><span class="s">&quot;eileen&quot;</span><span class="p">)</span>
+<span class="k">define</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Character</span><span class="p">(</span><span class="s">&quot;Lucy&quot;</span><span class="p">,</span> <span class="n">voice_tag</span><span class="o">=</span><span class="s">&quot;lucy&quot;</span><span class="p">)</span>
+
+<span class="k">screen</span> <span class="n">voice_toggle</span><span class="p">:</span>
+    <span class="k">vbox</span><span class="p">:</span>
+        <span class="k">textbutton</span> <span class="s">&quot;Mute Eileen&quot;</span> <span class="na">action</span> <span class="n">ToggleVoiceMute</span><span class="p">(</span><span class="s">&quot;eileen&quot;</span><span class="p">)</span>
+        <span class="k">textbutton</span> <span class="s">&quot;Mute Lucy&quot;</span> <span class="na">action</span> <span class="n">ToggleVoiceMute</span><span class="p">(</span><span class="s">&quot;lucy&quot;</span><span class="p">)</span>
+
+<span class="k">label</span> <span class="n">start</span><span class="p">:</span>
+    <span class="k">show</span> <span class="k">screen</span> <span class="n">voice_toggle</span>
+
+    <span class="k">voice</span> <span class="s">&quot;e01.ogg&quot;</span>
+    <span class="n">e</span> <span class="s">&quot;You can turn a character&#39;s voice on and off.&quot;</span>
+
+    <span class="k">voice</span> <span class="s">&quot;l01.ogg&quot;</span>
+    <span class="n">l</span> <span class="s">&quot;Yeah! Now I can finally shut you up!&quot;</span>
+
+    <span class="k">voice</span> <span class="s">&quot;l02.ogg&quot;</span>
+    <span class="n">l</span> <span class="s">&quot;Wait... that means they can mute me as well! Really?&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="automatic-voice">
+<span id="id1"></span><h2>Automatic Voice<a class="headerlink" href="#automatic-voice" title="Permalink to this headline">¶</a></h2>
+<p>Ren'Py includes support for automatically determining the voice file to play,
+making it possible to play back voice without having to put voice statements
+before each line of dialogue.</p>
+<p>This is done by creating voice files that match the identifier for each line
+of dialogue. To determine the identifiers to use , first export the dialogue
+to a spreadsheet by choosing from the launcher &quot;Extract Dialogue&quot;, &quot;Tab-delimited
+Spreadsheet (dialogue.tab)&quot;, and &quot;Continue&quot;. This will produce a file, dialogue.tab,
+that can be loaded in a spreadsheet program.</p>
+<p>The first column of the spreadsheet is the identifier to use, with other
+columns giving more information about the dialogue.</p>
+<p>To make Ren'Py automatically play voices, set <a class="reference internal" href="config.html#var-config.auto_voice"><tt class="xref std std-var docutils literal"><span class="pre">config.auto_voice</span></tt></a> to
+a string containing <cite>{id}</cite>. When dialogue occurs, <cite>{id}</cite> is replaced with
+the dialogue identifier, forming a filename. If the filename exists, it is
+played.</p>
+<p>For example, if we have:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="n">config</span><span class="o">.</span><span class="n">auto_voice</span> <span class="o">=</span> <span class="s">&quot;voice/{id}.ogg&quot;</span>
+</pre></div>
+</div>
+<p>And the dialogue identifier is <tt class="docutils literal"><span class="pre">demo_minigame_03fc91ef</span></tt>, then when
+the corresponding line is shown, Ren'Py will look for the file
+<tt class="docutils literal"><span class="pre">voice/demo_minigame_03fc91ef.ogg</span></tt>. If the file exists, Ren'Py will
+play it.</p>
+</div>
+<div class="section" id="voice-functions">
+<h2>Voice Functions<a class="headerlink" href="#voice-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="_get_voice_info">
+<tt class="descname">_get_voice_info</tt><big>(</big><big>)</big><a class="headerlink" href="#_get_voice_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns information about the voice being played by the current
+say statement. This function may only be called while a say statement
+is executing.</p>
+<p>The object returned has the following fields:</p>
+<dl class="attribute">
+<dt id="VoiceInfo.filename">
+<tt class="descclassname">VoiceInfo.</tt><tt class="descname">filename</tt><a class="headerlink" href="#VoiceInfo.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The filename of the voice to be played, or None if no files
+should be played.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VoiceInfo.auto_filename">
+<tt class="descclassname">VoiceInfo.</tt><tt class="descname">auto_filename</tt><a class="headerlink" href="#VoiceInfo.auto_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The filename that Ren'Py looked in for automatic-voicing
+purposes, or None if one could not be found.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VoiceInfo.tag">
+<tt class="descclassname">VoiceInfo.</tt><tt class="descname">tag</tt><a class="headerlink" href="#VoiceInfo.tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>The voice_tag parameter supplied to the speaking Character.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descname">voice</tt><big>(</big><em>filename</em>, <em>tag=None</em><big>)</big></dt>
+<dd><p>Plays <cite>filename</cite> on the voice channel. The equivalent of the voice
+statement.</p>
+<dl class="docutils">
+<dt><cite>filename</cite></dt>
+<dd>The filename to play. This is used with
+<a class="reference internal" href="config.html#var-config.voice_filename_format"><tt class="xref std std-var docutils literal"><span class="pre">config.voice_filename_format</span></tt></a> to produce the
+filename that will be played.</dd>
+<dt><cite>tag</cite></dt>
+<dd><p class="first">If this is not None, it should be a string giving a
+voice tag to be played. If None, this takes its
+default value from the voice_tag of the Character
+that causes the next interaction.</p>
+<p class="last">The voice tag is used to specify which character is
+speaking, to allow a user to mute or unmute the
+voices of particular characters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="voice_can_replay">
+<tt class="descname">voice_can_replay</tt><big>(</big><big>)</big><a class="headerlink" href="#voice_can_replay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if it's possible to replay the current voice.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="voice_replay">
+<tt class="descname">voice_replay</tt><big>(</big><big>)</big><a class="headerlink" href="#voice_replay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replays the current voice, if possible.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="voice_sustain">
+<tt class="descname">voice_sustain</tt><big>(</big><em>ignored=''</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#voice_sustain" title="Permalink to this definition">¶</a></dt>
+<dd><p>The equivalent of the voice sustain statement.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="voice-actions">
+<h2>Voice Actions<a class="headerlink" href="#voice-actions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="PlayCharacterVoice">
+<tt class="descname">PlayCharacterVoice</tt><big>(</big><em>voice_tag</em>, <em>sample</em><big>)</big><a class="headerlink" href="#PlayCharacterVoice" title="Permalink to this definition">¶</a></dt>
+<dd><p>This plays <cite>sample</cite> on the voice channel, as if said by a
+character with <cite>voice_tag</cite>.</p>
+<dl class="docutils">
+<dt><cite>sample</cite></dt>
+<dd>The full path to a sound file. No voice-related handling
+of this file is done.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="SetCharacterVolume">
+<tt class="descname">SetCharacterVolume</tt><big>(</big><em>voice_tag</em>, <em>volume=None</em><big>)</big><a class="headerlink" href="#SetCharacterVolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows the volume of each characters to be adjusted.
+If <cite>volume</cite> is None, this returns the value of volume of <cite>voice_tag</cite>.
+Otherwise, this set it to <cite>volume</cite>.</p>
+<p><cite>volume</cite> is a number between 0.0 and 1.0, and is interpreted as a
+fraction of the mixer volume for <cite>voice</cite> channel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="SetVoiceMute">
+<tt class="descname">SetVoiceMute</tt><big>(</big><em>voice_tag</em>, <em>mute</em><big>)</big><a class="headerlink" href="#SetVoiceMute" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <cite>mute</cite> is true, mutes voices that are played with the given
+<cite>voice_tag</cite>. If <cite>mute</cite> is false, unmutes voices that are played
+with <cite>voice_tag</cite>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ToggleVoiceMute">
+<tt class="descname">ToggleVoiceMute</tt><big>(</big><em>voice_tag</em>, <em>invert=False</em><big>)</big><a class="headerlink" href="#ToggleVoiceMute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles the muting of <cite>voice_tag</cite>. This is selected if
+the given voice tag is muted, unless <cite>invert</cite> is true,
+in which case it's selected if the voice is unmuted.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="VoiceReplay">
+<tt class="descname">VoiceReplay</tt><big>(</big><big>)</big><a class="headerlink" href="#VoiceReplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replays the most recently played voice.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="text.html" title="Text"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="movie.html" title="Movie"
+             >previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+
+
+	<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+	<script type="text/javascript">
+	  google.load('search', '1', {language : 'en' });
+	  google.setOnLoadCallback(function() {
+	    var customSearchControl = new google.search.CustomSearchControl('012476843541036121001:gx3sqkoaxkm');
+	    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+	    var options = new google.search.DrawOptions();
+	    options.enableSearchboxOnly("https://www.google.com/cse?cx=012476843541036121001:gx3sqkoaxkm");
+	    customSearchControl.draw('cse-search-form', options);
+	  }, true);
+	</script>
+
+  </body>
+</html>

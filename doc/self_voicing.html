@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Self Voicing &mdash; Ren&#39;Py Documentation</title>
+    <link rel="stylesheet" href="_static/screen.css" type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="print" />
+
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="screen, projection"/>
+    <![endif]-->
+
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '6.99.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Ren&#39;Py Documentation" href="index.html" />
+    <link rel="next" title="Text Editor Integration" href="editor.html" />
+    <link rel="prev" title="Environment Variables" href="environment_variables.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="editor.html" title="Text Editor Integration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="environment_variables.html" title="Environment Variables"
+             accesskey="P">previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+  <div class="container">
+  <div class="span4">
+    
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Self Voicing</a><ul>
+<li><a class="reference internal" href="#speech-synthesis">Speech Synthesis</a></li>
+<li><a class="reference internal" href="#creator-concerns">Creator Concerns</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="environment_variables.html"
+                        title="previous chapter">Environment Variables</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="editor.html"
+                        title="next chapter">Text Editor Integration</a></p>
+            <h4>Search</h4>
+            
+            <div id="cse-search-form" style="width: 100%;"></div>
+
+      <div class="copydata">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    <br>
+      </div>
+        </div>
+      </div>
+  
+  </div>
+
+
+    <div class="document span20 last">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="self-voicing">
+<span id="id1"></span><h1>Self Voicing<a class="headerlink" href="#self-voicing" title="Permalink to this headline">¶</a></h1>
+<p>Ren'Py supports a self-voicing mode in which a speech synthesizer is used
+to read out text and other interface elements. This is intended to make
+Ren'Py games accessible to the vision impaired.</p>
+<p>The Self-voicing mode can be toggled by pressing the <tt class="docutils literal"><span class="pre">v</span></tt> key.</p>
+<p>When in self-voicing mode, keyboard navigation is changed so that the
+up and down arrow keys with iterate through all focusable displayables
+on the screen.</p>
+<p>When a displayable is focused, Ren'Py will read the text associated with that
+displayable out loud. If no displayable is focused, Ren'Py will read on-screen
+text that cannot be focused. This will generally include dialogue and other
+text that comprises the game.</p>
+<div class="section" id="speech-synthesis">
+<h2>Speech Synthesis<a class="headerlink" href="#speech-synthesis" title="Permalink to this headline">¶</a></h2>
+<p>Ren'Py relies on the operating system to provide speech synthesis
+services. To adjust the speed of speech synthesis and the voice used,
+adjust your platform's speech settings.</p>
+<dl class="docutils">
+<dt>Windows</dt>
+<dd>On Windows, Ren'Py uses the Microsoft Speech API. Speech synthesis
+settings can  be changed on the &quot;Text to Speech&quot; tab of the &quot;Speech
+Recognition&quot; control panel.</dd>
+<dt>Mac OS X</dt>
+<dd>On Mac OS X, Ren'Py uses the <tt class="docutils literal"><span class="pre">say</span></tt> command. Speech synthesis settings
+can be changed on the &quot;Text to Speech&quot; tab of the &quot;Dictation &amp; Speech&quot;
+control panel.</dd>
+<dt>Linux</dt>
+<dd>On Linux, Ren'Py uses the <tt class="docutils literal"><span class="pre">espeak</span></tt> command. Espeak may need to be
+installed using your package manager before self-voicing mode will
+work.</dd>
+<dt>Android</dt>
+<dd>Self-voicing mode is not supported on Android</dd>
+</dl>
+</div>
+<div class="section" id="creator-concerns">
+<h2>Creator Concerns<a class="headerlink" href="#creator-concerns" title="Permalink to this headline">¶</a></h2>
+<p>Ren'Py's self-voicing works by extracting text from displayables and
+reading it to the player. Ren'Py extracts this text from two places.</p>
+<dl class="docutils">
+<dt>Text displayables</dt>
+<dd>Ren'Py will extract text from a Text displayable, and make it
+available to be read to the player.</dd>
+<dt>Alternative text</dt>
+<dd><p class="first">Alternative text is supplied by a displayable's <a class="reference internal" href="style_properties.html#style-property-alt"><tt class="xref std std-propref docutils literal"><span class="pre">alt</span></tt></a> style
+property. It can also be supplied by actions supplied to buttons
+and values supplied to bars. Explicitly supplied alternative takes
+precedence over text supplied by actions or values, and both take
+precedence over text extracted from Text displayables.</p>
+<p>Alternative text is translated using Ren'Py's string translation
+mechanism. Alternative text takes precedence over text extracted
+from a displayable and its children, but such child text is made
+available as the &quot;[text]&quot; string substitution. No other string
+substitutions are allowed.</p>
+<p>Supplying the <cite>who_alt</cite> and <cite>what_alt</cite> parameters to Character
+sets the alt style property for the character name and body text,
+respectively. As an example, we define a Character that uses italics
+to indicate thoughts normally, but explicitly indicates thoughts
+via self voicing:</p>
+<div class="last highlight-renpy"><div class="highlight"><pre><span class="k">define</span> <span class="n">thought</span> <span class="o">=</span> <span class="n">Character</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">what_italic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">what_alt</span><span class="o">=</span><span class="s">&quot;I think, [text]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Descriptive Text</dt>
+<dd><p class="first">Descriptive text is text that is displayed (and spoken) by the narrator if
+self-voicing is enabled. The text is not displayed if self-voicing is
+disabled. Self voicing text uses the <cite>sv</cite> variable, which is defined to
+be similar to a character.</p>
+<dl class="var">
+<dt id="var-sv">
+<tt class="descname">sv</tt> = ...<a class="headerlink" href="#var-sv" title="Permalink to this definition">¶</a></dt>
+<dd><p>A character-like object that uses the narrator to speak text if
+self-vocing is enabled.</p>
+</dd></dl>
+
+<p>For example:</p>
+<div class="last highlight-renpy"><div class="highlight"><pre><span class="n">e</span> <span class="s">&quot;Hang on, this is gonna be a bumpy ride!&quot;</span>
+
+<span class="n">sv</span> <span class="s">&quot;And then the sun exploded...&quot;</span>
+
+<span class="c"># A complex and exciting cut scene.</span>
+<span class="k">show</span> <span class="k">event</span> <span class="n">sun_exploding</span>
+<span class="k">pause</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>A self-voicing debug mode can be enabled by typing shift+alt+V. This will
+display the text that would be voiced on the screen for development
+purposes.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="editor.html" title="Text Editor Integration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="environment_variables.html" title="Environment Variables"
+             >previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+
+
+	<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+	<script type="text/javascript">
+	  google.load('search', '1', {language : 'en' });
+	  google.setOnLoadCallback(function() {
+	    var customSearchControl = new google.search.CustomSearchControl('012476843541036121001:gx3sqkoaxkm');
+	    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+	    var options = new google.search.DrawOptions();
+	    options.enableSearchboxOnly("https://www.google.com/cse?cx=012476843541036121001:gx3sqkoaxkm");
+	    customSearchControl.draw('cse-search-form', options);
+	  }, true);
+	</script>
+
+  </body>
+</html>

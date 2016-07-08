@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Screen Language Optimization &mdash; Ren&#39;Py Documentation</title>
+    <link rel="stylesheet" href="_static/screen.css" type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="print" />
+
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" media="screen, projection"/>
+    <![endif]-->
+
+    <link rel="stylesheet" href="_static/renpydoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '6.99.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Ren&#39;Py Documentation" href="index.html" />
+    <link rel="next" title="Configuration Variables" href="config.html" />
+    <link rel="prev" title="Special Screen Names" href="screen_special.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="config.html" title="Configuration Variables"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="screen_special.html" title="Special Screen Names"
+             accesskey="P">previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+  <div class="container">
+  <div class="span4">
+    
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Screen Language Optimization</a><ul>
+<li><a class="reference internal" href="#parameter-list">Parameter List</a></li>
+<li><a class="reference internal" href="#prediction">Prediction</a></li>
+<li><a class="reference internal" href="#displayable-reuse">Displayable Reuse</a></li>
+<li><a class="reference internal" href="#const-expressions-and-pure-functions">Const Expressions and Pure Functions</a><ul>
+<li><a class="reference internal" href="#definitions">Definitions</a></li>
+<li><a class="reference internal" href="#how-const-optimizes-screen-language">How Const Optimizes Screen Language</a></li>
+<li><a class="reference internal" href="#const-text">Const Text</a></li>
+<li><a class="reference internal" href="#const-functions">Const Functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#profiling">Profiling</a></li>
+<li><a class="reference internal" href="#const-names">Const Names</a></li>
+<li><a class="reference internal" href="#pure-names">Pure Names</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="screen_special.html"
+                        title="previous chapter">Special Screen Names</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="config.html"
+                        title="next chapter">Configuration Variables</a></p>
+            <h4>Search</h4>
+            
+            <div id="cse-search-form" style="width: 100%;"></div>
+
+      <div class="copydata">
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    <br>
+      </div>
+        </div>
+      </div>
+  
+  </div>
+
+
+    <div class="document span20 last">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="screen-language-optimization">
+<span id="screen-optimization"></span><h1>Screen Language Optimization<a class="headerlink" href="#screen-language-optimization" title="Permalink to this headline">¶</a></h1>
+<p>Ren'Py uses a number of techniques to optimize screen language speed. When
+using Ren'Py to create complex interfaces, such as those used by simulation
+games, it may help to understand how screen language works so you can
+achieve maximal performance.</p>
+<p>This guide is applicable to the second implementation of screen language,
+which was added to Ren'Py 6.18. If your game was created in Ren'Py 6.17
+or earlier, it may be necessary to chose the &quot;Force Recompile&quot; option
+in the launcher to ensure its screens are upgraded to the latest version.</p>
+<p>This guide isn't a substitute for good programming practice. If a screen
+uses nested loops to do a lot of unproductive work, it will be slower than
+a screen that avoids such looping. While understanding the techniques in
+this guide is important,</p>
+<div class="section" id="parameter-list">
+<h2>Parameter List<a class="headerlink" href="#parameter-list" title="Permalink to this headline">¶</a></h2>
+<p>For best performance, all screens should be defined with a parameter list.
+When a screen doesn't take parameters, it should be define with an empty
+parameter list. The screen:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">screen</span> <span class="n">test</span><span class="p">():</span>
+    <span class="k">vbox</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="na">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">text</span> <span class="s">&quot;[i]&quot;</span>
+</pre></div>
+</div>
+<p>is faster than:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">screen</span> <span class="n">test</span><span class="p">:</span>
+    <span class="k">vbox</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="na">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">text</span> <span class="s">&quot;[i]&quot;</span>
+</pre></div>
+</div>
+<p>When a screen is defined without a parameter list, any name used in that
+screen can be redefined when the screen is show. This requires Ren'Py to be
+more conservative when analyzing the screen, which can limit the optimization
+it performs.</p>
+</div>
+<div class="section" id="prediction">
+<h2>Prediction<a class="headerlink" href="#prediction" title="Permalink to this headline">¶</a></h2>
+<p>Screens perform better when they're predicted in advance. That's because
+Ren'Py will execute the screen during prediction time, and load in images
+that are used by the screen.</p>
+<p>There are two ways Ren'Py automatically predicts screens:</p>
+<ul class="simple">
+<li>Ren'Py will predict screens shown by the <tt class="docutils literal"><span class="pre">show</span> <span class="pre">screen</span></tt> and <tt class="docutils literal"><span class="pre">call</span> <span class="pre">screen</span></tt>
+statements.</li>
+<li>Ren'Py will predict screen that will be shown by the <a class="reference internal" href="screen_actions.html#Show" title="Show"><tt class="xref py py-func docutils literal"><span class="pre">Show()</span></tt></a> and <a class="reference internal" href="screen_actions.html#ShowMenu" title="ShowMenu"><tt class="xref py py-func docutils literal"><span class="pre">ShowMenu()</span></tt></a>
+actions.</li>
+</ul>
+<p>If screens are shown from python code, it's a good idea to start predicting
+the screen before it is shown. To start predicting a screen, use the
+<a class="reference internal" href="screen_python.html#renpy.start_predict_screen" title="renpy.start_predict_screen"><tt class="xref py py-func docutils literal"><span class="pre">renpy.start_predict_screen()</span></tt></a> function. To stop predicting a screen,
+use the <a class="reference internal" href="screen_python.html#renpy.stop_predict_screen" title="renpy.stop_predict_screen"><tt class="xref py py-func docutils literal"><span class="pre">renpy.stop_predict_screen()</span></tt></a> function.</p>
+</div>
+<div class="section" id="displayable-reuse">
+<h2>Displayable Reuse<a class="headerlink" href="#displayable-reuse" title="Permalink to this headline">¶</a></h2>
+<p>When evaluating a screen language statement that creates a displayable, Ren'Py
+will check to see if the positional arguments and properties given to that
+displayable are equal to the positional arguments and properties given the
+last time that statement was evaluated. If they are, instead of making a new
+displayable, Ren'Py will reuse the existing displayable.</p>
+<p>Displayable reuse has a number of performance implications. It saves the cost
+of creating a new displayable, which may be significant for displayables that
+contain a lot of internal state. More importantly, reusing a displayable means
+that in many cases, Ren'Py will not need to re-render the displayable before
+showing it to the user, which can lead to another significant speedup.</p>
+<p>To compare positional arguments and properties, Ren'Py uses the notion of
+equality embodied by Python's == operator. We've extended this notion of
+equality to actions by deciding two actions should be equal when they are
+indistinguishable from each other - when it doesn't matter which action
+is invoked, or which action is queried to determine sensitivity or
+selectedness.</p>
+<p>All actions provided with Ren'Py conform to this definition. When defining
+your own actions, it makes sense to provide them with this notion of
+equality. This can be done by supplying an appropriate __eq__ method.
+For example:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">class</span> <span class="nc">TargetShip</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ship</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ship</span> <span class="o">=</span> <span class="n">ship</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="k">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TargetShip</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ship</span> <span class="k">is</span> <span class="n">other</span><span class="o">.</span><span class="n">ship</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">target</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ship</span>
+</pre></div>
+</div>
+<p>It's important to define the __eq__ function carefully, making sure it
+compares all fields, and uses equality (==) and identity (is) comparison
+as appropriate.</p>
+</div>
+<div class="section" id="const-expressions-and-pure-functions">
+<h2>Const Expressions and Pure Functions<a class="headerlink" href="#const-expressions-and-pure-functions" title="Permalink to this headline">¶</a></h2>
+<p>Ren'Py can exploit the properties of const variables and pure functions
+to improve the speed of screen evaluation, and to entirely avoid the
+evaluation of some parts of screens.</p>
+<div class="section" id="definitions">
+<h3>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h3>
+<p>An expression is <strong>const</strong> (short for constant) if it always represents the
+same value when it is evaluated. For Ren'Py's purposes, an expression is
+const if and only if the following expressions always evaluate to the same
+const value or are undefined:</p>
+<ul class="simple">
+<li>Applying any unary, binary, or ternary operator to the expression, provided
+the other operands are also const.</li>
+<li>Accessing a field on the expression.</li>
+<li>Indexing the expression, either using a number or an object.</li>
+</ul>
+<p>Python numbers and strings are const, as are list, tuple, set, and dict
+literals for which all components are const. Ren'Py marks
+variables defined using the <tt class="docutils literal"><span class="pre">define</span></tt> statement as const.
+The <a class="reference internal" href="#renpy.const" title="renpy.const"><tt class="xref py py-func docutils literal"><span class="pre">renpy.const()</span></tt></a> and <a class="reference internal" href="#renpy.not_const" title="renpy.not_const"><tt class="xref py py-func docutils literal"><span class="pre">renpy.not_const()</span></tt></a> functions
+can be used to further control what Ren'Py considers to be const. The
+default list of const names is given in the <a class="reference internal" href="#const-names"><em>Const Names</em></a>
+section below.</p>
+<p>If you have a variable that will never change, it makes sense to use <tt class="docutils literal"><span class="pre">define</span></tt>
+to both define it and declare it const. For example:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">define</span> <span class="n">GRID_WIDTH</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="k">define</span> <span class="n">GRID_HEIGHT</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>A callable function, class, or action is <strong>pure</strong> if, when all of its arguments
+are const values, it always gives the same const value. Alternatively, an
+expression that invokes a pure function with const expression is also a
+const expression.</p>
+<p>A large number of default functions, classes, and actions are marked as
+pure. These functions are listed in the <a class="reference internal" href="#pure-names"><em>Pure Names</em></a>
+section below.</p>
+<p>Functions are declared pure using the <a class="reference internal" href="#renpy.pure" title="renpy.pure"><tt class="xref py py-func docutils literal"><span class="pre">renpy.pure()</span></tt></a> function, which
+can be used as a decorator for functions declared in the default store.</p>
+<p>Const expressions and pure functions do not need to retain the same value
+across the following events:</p>
+<ul class="simple">
+<li>The end of the init phase.</li>
+<li>A change of the language.</li>
+<li>A style rebuild.</li>
+</ul>
+</div>
+<div class="section" id="how-const-optimizes-screen-language">
+<h3>How Const Optimizes Screen Language<a class="headerlink" href="#how-const-optimizes-screen-language" title="Permalink to this headline">¶</a></h3>
+<p>There are three advantages to ensuring that screen language arguments and
+properties are const.</p>
+<p>The first is that const arguments and properties are evaluated when
+screens are prepared, which is at the end of the init phase, when the
+language is changed, or when styles are rebuilt. After that, it is no
+longer necessary to spend time evaluating const arguments and properties.</p>
+<p>The second is that const works well with displayable reuse. When all of
+the arguments and properties of a displayable are const, the displayable
+can always be reused, which gains all the benefits of displayable reuse.</p>
+<p>Lastly, when Ren'Py encounters a tree of displayables such that all
+arguments, properties, and expressions affecting control flow are
+also const, Ren'Py will reuse the entire tree without evaluating
+expressions or creating displayables. This can yield a significant
+performance boost.</p>
+<p>For example, the following screen does not execute any code or create
+any displayables after the first time it is predicted or shown:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">screen</span> <span class="n">mood_picker</span><span class="p">():</span>
+    <span class="k">hbox</span><span class="p">:</span>
+        <span class="na">xalign</span> <span class="mf">1.0</span>
+        <span class="na">yalign</span> <span class="mf">0.0</span>
+
+        <span class="k">textbutton</span> <span class="s">&quot;Happy&quot;</span> <span class="na">action</span> <span class="n">SetVariable</span><span class="p">(</span><span class="s">&quot;mood&quot;</span><span class="p">,</span> <span class="s">&quot;happy&quot;</span><span class="p">)</span>
+        <span class="k">textbutton</span> <span class="s">&quot;Sad&quot;</span> <span class="na">action</span> <span class="n">SetVariable</span><span class="p">(</span><span class="s">&quot;mood&quot;</span><span class="p">,</span> <span class="s">&quot;sad&quot;</span><span class="p">)</span>
+        <span class="k">textbutton</span> <span class="s">&quot;Angry&quot;</span> <span class="na">action</span> <span class="n">SetVariable</span><span class="p">(</span><span class="s">&quot;mood&quot;</span><span class="p">,</span> <span class="s">&quot;angry&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="const-text">
+<h3>Const Text<a class="headerlink" href="#const-text" title="Permalink to this headline">¶</a></h3>
+<p>When defining text, please note that strings containing new-style text
+substitutions are const:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">$</span> <span class="n">t</span> <span class="o">=</span> <span class="s">&quot;Hello, world.&quot;</span>
+<span class="k">text</span> <span class="s">&quot;[t]&quot;</span>
+</pre></div>
+</div>
+<p>Supplying a variable containing the text directly is generally not const:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">$</span> <span class="n">t</span> <span class="o">=</span> <span class="s">&quot;Hello, world.&quot;</span>
+<span class="k">text</span> <span class="n">t</span>
+</pre></div>
+</div>
+<p>Neither is using percent-substitution:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">$</span> <span class="n">t</span> <span class="o">=</span> <span class="s">&quot;Hello, world.&quot;</span>
+<span class="k">text</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">t</span>
+</pre></div>
+</div>
+<p>Lastly, note that the _ text translation function is pure, so if it contains
+a string, the entire expression is const:</p>
+<div class="highlight-renpy"><div class="highlight"><pre><span class="k">text</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Your score is: [score]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="const-functions">
+<h3>Const Functions<a class="headerlink" href="#const-functions" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="renpy.const">
+<tt class="descclassname">renpy.</tt><tt class="descname">const</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#renpy.const" title="Permalink to this definition">¶</a></dt>
+<dd><p>Declares a variable in the store to be constant.</p>
+<p>A variable is constant if nothing can change its value, or any value
+reached by indexing it or accessing its attributes. Variables must
+remain constant out of define, init, and translate python blocks.</p>
+<dl class="docutils">
+<dt><cite>name</cite></dt>
+<dd>A string giving the name of the variable to declare constant.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="renpy.not_const">
+<tt class="descclassname">renpy.</tt><tt class="descname">not_const</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#renpy.not_const" title="Permalink to this definition">¶</a></dt>
+<dd><p>Declares a name in the store to be not constant.</p>
+<p>This undoes the effect of calls to <a class="reference internal" href="#renpy.const" title="renpy.const"><tt class="xref py py-func docutils literal"><span class="pre">renpy.const()</span></tt></a> and
+<a class="reference internal" href="#renpy.pure" title="renpy.pure"><tt class="xref py py-func docutils literal"><span class="pre">renpy.pure()</span></tt></a>.</p>
+<dl class="docutils">
+<dt><cite>name</cite></dt>
+<dd>The name to declare not constant.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="renpy.pure">
+<tt class="descclassname">renpy.</tt><tt class="descname">pure</tt><big>(</big><em>fn</em><big>)</big><a class="headerlink" href="#renpy.pure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Declares a function as pure. A pure function must always return the
+same value when it is called with the same arguments, outside of
+define, init, and translate python blocks.</p>
+<dl class="docutils">
+<dt><cite>fn</cite></dt>
+<dd>The name of the function to declare pure. This may either be a string
+containing the name of the function, or the function itself.</dd>
+</dl>
+<p>Returns <cite>fn</cite>, allowing this function to be used as a decorator.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline">¶</a></h2>
+<p>Ren'Py supports profiling screen execution through the <tt class="docutils literal"><span class="pre">renpy.profile_screen</span></tt>
+function:</p>
+<dl class="function">
+<dt id="renpy.profile_screen">
+<tt class="descclassname">renpy.</tt><tt class="descname">profile_screen</tt><big>(</big><em>name</em>, <em>predict=False</em>, <em>show=False</em>, <em>update=False</em>, <em>request=False</em>, <em>time=False</em>, <em>debug=False</em>, <em>const=False</em><big>)</big><a class="headerlink" href="#renpy.profile_screen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests screen profiling for the screen named <cite>name</cite>, which
+must be a string.</p>
+<p>Apart from <cite>name</cite>, all arguments must be supplied as keyword
+arguments. This function takes three groups of arguments.</p>
+<p>The first group of arguments determines when profiling occurs.</p>
+<dl class="docutils">
+<dt><cite>predict</cite></dt>
+<dd>If true, profiling occurs when the screen is being predicted.</dd>
+<dt><cite>show</cite></dt>
+<dd>If true, profiling occurs when the screen is first shown.</dd>
+<dt><cite>update</cite></dt>
+<dd>If true, profiling occurs when the screen is updated.</dd>
+<dt><cite>request</cite></dt>
+<dd>If true, profiling occurs when requested by pressing F8.</dd>
+</dl>
+<p>The second group of arguments controls what profiling output is
+produced when profiling occurs.</p>
+<dl class="docutils">
+<dt><cite>time</cite></dt>
+<dd>If true, Ren'Py will log the amount of time it takes to evaluate
+the screen.</dd>
+<dt><cite>debug</cite></dt>
+<dd><p class="first">If true, Ren'Py will log information as to how screens are
+evaluated, including:</p>
+<ul class="simple">
+<li>Which displayables Ren'Py considers constant.</li>
+<li>Which arguments, if any, needed to be evaluated.</li>
+<li>Which displayables were reused.</li>
+</ul>
+<p class="last">Producing and saving this debug information takes a noticeable
+amount of time, and so the <cite>time</cite> output should not be considered
+reliable if <cite>debug</cite> is set.</p>
+</dd>
+</dl>
+<p>The last group of arguments controls what output is produced once
+per Ren'Py run.</p>
+<dl class="docutils">
+<dt><cite>const</cite></dt>
+<dd>Displays the variables in the screen that are marked as const and
+not-const.</dd>
+</dl>
+<p>All profiling profiling output will be logged to profile_screen.txt in
+the game directory.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="const-names">
+<span id="id1"></span><h2>Const Names<a class="headerlink" href="#const-names" title="Permalink to this headline">¶</a></h2>
+<p>The following names are const by default.</p>
+<ul class="simple">
+<li>False</li>
+<li>None</li>
+<li>True</li>
+<li>config</li>
+<li>style</li>
+</ul>
+</div>
+<div class="section" id="pure-names">
+<span id="id2"></span><h2>Pure Names<a class="headerlink" href="#pure-names" title="Permalink to this headline">¶</a></h2>
+<p>The following names are both pure and const by default.</p>
+<ul class="simple">
+<li>ADVCharacter</li>
+<li>ADVSpeaker</li>
+<li><a class="reference internal" href="screen_actions.html#AddToSet" title="AddToSet"><tt class="xref py py-func docutils literal"><span class="pre">AddToSet()</span></tt></a></li>
+<li>Alpha</li>
+<li><a class="reference internal" href="displayables.html#AlphaBlend" title="AlphaBlend"><tt class="xref py py-func docutils literal"><span class="pre">AlphaBlend()</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#AlphaDissolve" title="AlphaDissolve"><tt class="xref py py-func docutils literal"><span class="pre">AlphaDissolve()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#AlphaMask" title="AlphaMask"><tt class="xref py py-func docutils literal"><span class="pre">AlphaMask()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#AnimatedValue" title="AnimatedValue"><tt class="xref py py-func docutils literal"><span class="pre">AnimatedValue()</span></tt></a></li>
+<li>Animation</li>
+<li><a class="reference internal" href="displayables.html#At" title="At"><tt class="xref py py-func docutils literal"><span class="pre">At()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#AudioPositionValue" title="AudioPositionValue"><tt class="xref py py-func docutils literal"><span class="pre">AudioPositionValue()</span></tt></a></li>
+<li><a class="reference internal" href="dialogue.html#Character" title="Character"><tt class="xref py py-func docutils literal"><span class="pre">Character()</span></tt></a></li>
+<li><a class="reference internal" href="color_class.html#Color" title="Color"><tt class="xref py py-class docutils literal"><span class="pre">Color</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#ComposeTransition" title="ComposeTransition"><tt class="xref py py-func docutils literal"><span class="pre">ComposeTransition()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#ConditionSwitch" title="ConditionSwitch"><tt class="xref py py-func docutils literal"><span class="pre">ConditionSwitch()</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#CropMove" title="CropMove"><tt class="xref py py-func docutils literal"><span class="pre">CropMove()</span></tt></a></li>
+<li><tt class="xref py py-func docutils literal"><span class="pre">DictInputValue()</span></tt></li>
+<li><a class="reference internal" href="screen_actions.html#DictValue" title="DictValue"><tt class="xref py py-func docutils literal"><span class="pre">DictValue()</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#Dissolve" title="Dissolve"><tt class="xref py py-func docutils literal"><span class="pre">Dissolve()</span></tt></a></li>
+<li><a class="reference internal" href="drag_drop.html#Drag" title="Drag"><tt class="xref py py-class docutils literal"><span class="pre">Drag</span></tt></a></li>
+<li>DynamicCharacter</li>
+<li><a class="reference internal" href="displayables.html#DynamicDisplayable" title="DynamicDisplayable"><tt class="xref py py-func docutils literal"><span class="pre">DynamicDisplayable()</span></tt></a></li>
+<li><a class="reference internal" href="rooms.html#EndReplay" title="EndReplay"><tt class="xref py py-func docutils literal"><span class="pre">EndReplay()</span></tt></a></li>
+<li>FactorZoom</li>
+<li><a class="reference internal" href="transitions.html#Fade" title="Fade"><tt class="xref py py-func docutils literal"><span class="pre">Fade()</span></tt></a></li>
+<li><tt class="xref py py-func docutils literal"><span class="pre">FieldInputValue()</span></tt></li>
+<li><a class="reference internal" href="screen_actions.html#FieldValue" title="FieldValue"><tt class="xref py py-func docutils literal"><span class="pre">FieldValue()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#FileDelete" title="FileDelete"><tt class="xref py py-func docutils literal"><span class="pre">FileDelete()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#FilePage" title="FilePage"><tt class="xref py py-func docutils literal"><span class="pre">FilePage()</span></tt></a></li>
+<li><tt class="xref py py-func docutils literal"><span class="pre">FilePageNameInputValue()</span></tt></li>
+<li><a class="reference internal" href="screen_actions.html#FileTakeScreenshot" title="FileTakeScreenshot"><tt class="xref py py-func docutils literal"><span class="pre">FileTakeScreenshot()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#Fixed" title="Fixed"><tt class="xref py py-func docutils literal"><span class="pre">Fixed()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#Flatten" title="Flatten"><tt class="xref py py-func docutils literal"><span class="pre">Flatten()</span></tt></a></li>
+<li><a class="reference internal" href="text.html#FontGroup" title="FontGroup"><tt class="xref py py-func docutils literal"><span class="pre">FontGroup()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#Frame" title="Frame"><tt class="xref py py-func docutils literal"><span class="pre">Frame()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#Grid" title="Grid"><tt class="xref py py-func docutils literal"><span class="pre">Grid()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#HBox" title="HBox"><tt class="xref py py-func docutils literal"><span class="pre">HBox()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Help" title="Help"><tt class="xref py py-func docutils literal"><span class="pre">Help()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Hide" title="Hide"><tt class="xref py py-func docutils literal"><span class="pre">Hide()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#HideInterface" title="HideInterface"><tt class="xref py py-func docutils literal"><span class="pre">HideInterface()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#If" title="If"><tt class="xref py py-func docutils literal"><span class="pre">If()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#Image" title="Image"><tt class="xref py py-func docutils literal"><span class="pre">Image()</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#ImageDissolve" title="ImageDissolve"><tt class="xref py py-func docutils literal"><span class="pre">ImageDissolve()</span></tt></a></li>
+<li>ImageReference</li>
+<li><a class="reference internal" href="screen_python.html#InputValue" title="InputValue"><tt class="xref py py-class docutils literal"><span class="pre">InputValue</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#InvertSelected" title="InvertSelected"><tt class="xref py py-func docutils literal"><span class="pre">InvertSelected()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Jump" title="Jump"><tt class="xref py py-func docutils literal"><span class="pre">Jump()</span></tt></a></li>
+<li><a class="reference internal" href="translation.html#Language" title="Language"><tt class="xref py py-func docutils literal"><span class="pre">Language()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#LiveComposite" title="LiveComposite"><tt class="xref py py-func docutils literal"><span class="pre">LiveComposite()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#LiveCrop" title="LiveCrop"><tt class="xref py py-func docutils literal"><span class="pre">LiveCrop()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#LiveTile" title="LiveTile"><tt class="xref py py-func docutils literal"><span class="pre">LiveTile()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#MainMenu" title="MainMenu"><tt class="xref py py-func docutils literal"><span class="pre">MainMenu()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#MixerValue" title="MixerValue"><tt class="xref py py-func docutils literal"><span class="pre">MixerValue()</span></tt></a></li>
+<li>Motion</li>
+<li><a class="reference internal" href="screen_actions.html#MouseMove" title="MouseMove"><tt class="xref py py-func docutils literal"><span class="pre">MouseMove()</span></tt></a></li>
+<li>Move</li>
+<li>MoveFactory</li>
+<li>MoveIn</li>
+<li>MoveOut</li>
+<li><a class="reference internal" href="transitions.html#MoveTransition" title="MoveTransition"><tt class="xref py py-func docutils literal"><span class="pre">MoveTransition()</span></tt></a></li>
+<li><a class="reference internal" href="movie.html#Movie" title="Movie"><tt class="xref py py-func docutils literal"><span class="pre">Movie()</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#MultipleTransition" title="MultipleTransition"><tt class="xref py py-func docutils literal"><span class="pre">MultipleTransition()</span></tt></a></li>
+<li>NVLCharacter</li>
+<li><a class="reference internal" href="screen_actions.html#Notify" title="Notify"><tt class="xref py py-func docutils literal"><span class="pre">Notify()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#Null" title="Null"><tt class="xref py py-func docutils literal"><span class="pre">Null()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#NullAction" title="NullAction"><tt class="xref py py-func docutils literal"><span class="pre">NullAction()</span></tt></a></li>
+<li>OldMoveTransition</li>
+<li><a class="reference internal" href="screen_actions.html#OpenURL" title="OpenURL"><tt class="xref py py-func docutils literal"><span class="pre">OpenURL()</span></tt></a></li>
+<li>Pan</li>
+<li><a class="reference internal" href="text.html#ParameterizedText" title="ParameterizedText"><tt class="xref py py-func docutils literal"><span class="pre">ParameterizedText()</span></tt></a></li>
+<li>Particles</li>
+<li><a class="reference internal" href="transitions.html#Pause" title="Pause"><tt class="xref py py-func docutils literal"><span class="pre">Pause()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#PauseAudio" title="PauseAudio"><tt class="xref py py-func docutils literal"><span class="pre">PauseAudio()</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#Pixellate" title="Pixellate"><tt class="xref py py-func docutils literal"><span class="pre">Pixellate()</span></tt></a></li>
+<li>Play</li>
+<li><a class="reference internal" href="voice.html#PlayCharacterVoice" title="PlayCharacterVoice"><tt class="xref py py-func docutils literal"><span class="pre">PlayCharacterVoice()</span></tt></a></li>
+<li>Position</li>
+<li><a class="reference internal" href="screen_actions.html#Preference" title="Preference"><tt class="xref py py-func docutils literal"><span class="pre">Preference()</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#PushMove" title="PushMove"><tt class="xref py py-func docutils literal"><span class="pre">PushMove()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Queue" title="Queue"><tt class="xref py py-func docutils literal"><span class="pre">Queue()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#QuickLoad" title="QuickLoad"><tt class="xref py py-func docutils literal"><span class="pre">QuickLoad()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#QuickSave" title="QuickSave"><tt class="xref py py-func docutils literal"><span class="pre">QuickSave()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Quit" title="Quit"><tt class="xref py py-func docutils literal"><span class="pre">Quit()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#RemoveFromSet" title="RemoveFromSet"><tt class="xref py py-func docutils literal"><span class="pre">RemoveFromSet()</span></tt></a></li>
+<li><a class="reference internal" href="rooms.html#Replay" title="Replay"><tt class="xref py py-func docutils literal"><span class="pre">Replay()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#RestartStatement" title="RestartStatement"><tt class="xref py py-func docutils literal"><span class="pre">RestartStatement()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Return" title="Return"><tt class="xref py py-func docutils literal"><span class="pre">Return()</span></tt></a></li>
+<li>Revolve</li>
+<li>RevolveInOut</li>
+<li><a class="reference internal" href="screen_actions.html#RollForward" title="RollForward"><tt class="xref py py-func docutils literal"><span class="pre">RollForward()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Rollback" title="Rollback"><tt class="xref py py-func docutils literal"><span class="pre">Rollback()</span></tt></a></li>
+<li>RotoZoom</li>
+<li><tt class="xref py py-func docutils literal"><span class="pre">ScreenVariableInputValue()</span></tt></li>
+<li><a class="reference internal" href="screen_actions.html#Screenshot" title="Screenshot"><tt class="xref py py-func docutils literal"><span class="pre">Screenshot()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SelectedIf" title="SelectedIf"><tt class="xref py py-func docutils literal"><span class="pre">SelectedIf()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SensitiveIf" title="SensitiveIf"><tt class="xref py py-func docutils literal"><span class="pre">SensitiveIf()</span></tt></a></li>
+<li><a class="reference internal" href="voice.html#SetCharacterVolume" title="SetCharacterVolume"><tt class="xref py py-func docutils literal"><span class="pre">SetCharacterVolume()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SetDict" title="SetDict"><tt class="xref py py-func docutils literal"><span class="pre">SetDict()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SetField" title="SetField"><tt class="xref py py-func docutils literal"><span class="pre">SetField()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SetMixer" title="SetMixer"><tt class="xref py py-func docutils literal"><span class="pre">SetMixer()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SetMute" title="SetMute"><tt class="xref py py-func docutils literal"><span class="pre">SetMute()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SetScreenVariable" title="SetScreenVariable"><tt class="xref py py-func docutils literal"><span class="pre">SetScreenVariable()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#SetVariable" title="SetVariable"><tt class="xref py py-func docutils literal"><span class="pre">SetVariable()</span></tt></a></li>
+<li><a class="reference internal" href="voice.html#SetVoiceMute" title="SetVoiceMute"><tt class="xref py py-func docutils literal"><span class="pre">SetVoiceMute()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#Show" title="Show"><tt class="xref py py-func docutils literal"><span class="pre">Show()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ShowMenu" title="ShowMenu"><tt class="xref py py-func docutils literal"><span class="pre">ShowMenu()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ShowTransient" title="ShowTransient"><tt class="xref py py-func docutils literal"><span class="pre">ShowTransient()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#ShowingSwitch" title="ShowingSwitch"><tt class="xref py py-func docutils literal"><span class="pre">ShowingSwitch()</span></tt></a></li>
+<li>SizeZoom</li>
+<li><a class="reference internal" href="screen_actions.html#Skip" title="Skip"><tt class="xref py py-func docutils literal"><span class="pre">Skip()</span></tt></a></li>
+<li><a class="reference internal" href="sprites.html#SnowBlossom" title="SnowBlossom"><tt class="xref py py-func docutils literal"><span class="pre">SnowBlossom()</span></tt></a></li>
+<li><a class="reference internal" href="displayables.html#Solid" title="Solid"><tt class="xref py py-func docutils literal"><span class="pre">Solid()</span></tt></a></li>
+<li>Speaker</li>
+<li><a class="reference internal" href="screen_actions.html#Start" title="Start"><tt class="xref py py-func docutils literal"><span class="pre">Start()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#StaticValue" title="StaticValue"><tt class="xref py py-func docutils literal"><span class="pre">StaticValue()</span></tt></a></li>
+<li>Stop</li>
+<li><a class="reference internal" href="style.html#StylePreference" title="StylePreference"><tt class="xref py py-func docutils literal"><span class="pre">StylePreference()</span></tt></a></li>
+<li>SubTransition</li>
+<li><a class="reference internal" href="text.html#Text" title="Text"><tt class="xref py py-func docutils literal"><span class="pre">Text()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ToggleDict" title="ToggleDict"><tt class="xref py py-func docutils literal"><span class="pre">ToggleDict()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ToggleField" title="ToggleField"><tt class="xref py py-func docutils literal"><span class="pre">ToggleField()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ToggleMute" title="ToggleMute"><tt class="xref py py-func docutils literal"><span class="pre">ToggleMute()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ToggleScreenVariable" title="ToggleScreenVariable"><tt class="xref py py-func docutils literal"><span class="pre">ToggleScreenVariable()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ToggleSetMembership" title="ToggleSetMembership"><tt class="xref py py-func docutils literal"><span class="pre">ToggleSetMembership()</span></tt></a></li>
+<li><a class="reference internal" href="screen_actions.html#ToggleVariable" title="ToggleVariable"><tt class="xref py py-func docutils literal"><span class="pre">ToggleVariable()</span></tt></a></li>
+<li><a class="reference internal" href="voice.html#ToggleVoiceMute" title="ToggleVoiceMute"><tt class="xref py py-func docutils literal"><span class="pre">ToggleVoiceMute()</span></tt></a></li>
+<li><a class="reference internal" href="trans_trans_python.html#Transform" title="Transform"><tt class="xref py py-class docutils literal"><span class="pre">Transform</span></tt></a></li>
+<li>Update</li>
+<li><a class="reference internal" href="displayables.html#VBox" title="VBox"><tt class="xref py py-func docutils literal"><span class="pre">VBox()</span></tt></a></li>
+<li><tt class="xref py py-func docutils literal"><span class="pre">VariableInputValue()</span></tt></li>
+<li><a class="reference internal" href="screen_actions.html#VariableValue" title="VariableValue"><tt class="xref py py-func docutils literal"><span class="pre">VariableValue()</span></tt></a></li>
+<li>Viewport</li>
+<li><a class="reference internal" href="voice.html#VoiceReplay" title="VoiceReplay"><tt class="xref py py-func docutils literal"><span class="pre">VoiceReplay()</span></tt></a></li>
+<li>Window</li>
+<li>Zoom</li>
+<li>ZoomInOut</li>
+<li><a class="reference internal" href="translation.html#_" title="_"><tt class="xref py py-func docutils literal"><span class="pre">_()</span></tt></a></li>
+<li>_InputValueAction</li>
+<li>_m1_00gallery__GalleryAction</li>
+<li>_m1_00gallery__GalleryToggleSlideshow</li>
+<li>_m1_00musicroom__MusicRoomPlay</li>
+<li>_m1_00musicroom__MusicRoomRandomPlay</li>
+<li>_m1_00musicroom__MusicRoomTogglePlay</li>
+<li>_m1_00preferences__DisplayAction</li>
+<li>_movebottom</li>
+<li>_moveleft</li>
+<li>_moveright</li>
+<li>_movetop</li>
+<li>_narrator</li>
+<li>_notify_transform</li>
+<li>abs</li>
+<li>all</li>
+<li>any</li>
+<li>apply</li>
+<li>bin</li>
+<li><a class="reference internal" href="transitions.html#var-blinds"><tt class="xref std std-var docutils literal"><span class="pre">blinds</span></tt></a></li>
+<li>bool</li>
+<li>bytes</li>
+<li>callable</li>
+<li>centered</li>
+<li>chr</li>
+<li>cmp</li>
+<li>color</li>
+<li>dict</li>
+<li><a class="reference internal" href="transitions.html#var-dissolve"><tt class="xref std std-var docutils literal"><span class="pre">dissolve</span></tt></a></li>
+<li>divmod</li>
+<li><a class="reference internal" href="transitions.html#var-fade"><tt class="xref std std-var docutils literal"><span class="pre">fade</span></tt></a></li>
+<li>filter</li>
+<li>float</li>
+<li>frozenset</li>
+<li>getattr</li>
+<li>globals</li>
+<li>hasattr</li>
+<li>hash</li>
+<li>hex</li>
+<li><a class="reference internal" href="transitions.html#var-hpunch"><tt class="xref std std-var docutils literal"><span class="pre">hpunch</span></tt></a></li>
+<li>int</li>
+<li><a class="reference internal" href="transitions.html#var-irisin"><tt class="xref std std-var docutils literal"><span class="pre">irisin</span></tt></a></li>
+<li>irisout</li>
+<li>isinstance</li>
+<li>len</li>
+<li>list</li>
+<li>long</li>
+<li>map</li>
+<li>max</li>
+<li>min</li>
+<li><a class="reference internal" href="store_variables.html#var-name_only"><tt class="xref std std-var docutils literal"><span class="pre">name_only</span></tt></a></li>
+<li><a class="reference internal" href="store_variables.html#var-narrator"><tt class="xref std std-var docutils literal"><span class="pre">narrator</span></tt></a></li>
+<li>oct</li>
+<li>ord</li>
+<li><a class="reference internal" href="transitions.html#var-pixellate"><tt class="xref std std-var docutils literal"><span class="pre">pixellate</span></tt></a></li>
+<li>pow</li>
+<li>pushdown</li>
+<li>pushleft</li>
+<li><a class="reference internal" href="transitions.html#var-pushright"><tt class="xref std std-var docutils literal"><span class="pre">pushright</span></tt></a></li>
+<li>pushup</li>
+<li>range</li>
+<li>reduce</li>
+<li>renpy.Keymap</li>
+<li><a class="reference internal" href="text.html#renpy.ParameterizedText" title="renpy.ParameterizedText"><tt class="xref py py-func docutils literal"><span class="pre">renpy.ParameterizedText()</span></tt></a></li>
+<li><a class="reference internal" href="cds.html#renpy.check_text_tags" title="renpy.check_text_tags"><tt class="xref py py-func docutils literal"><span class="pre">renpy.check_text_tags()</span></tt></a></li>
+<li>renpy.curried_call_in_new_context</li>
+<li>renpy.curried_invoke_in_new_context</li>
+<li>renpy.curry</li>
+<li>renpy.easy_displayable</li>
+<li><a class="reference internal" href="file_python.html#renpy.exists" title="renpy.exists"><tt class="xref py py-func docutils literal"><span class="pre">renpy.exists()</span></tt></a></li>
+<li><a class="reference internal" href="file_python.html#renpy.fsdecode" title="renpy.fsdecode"><tt class="xref py py-func docutils literal"><span class="pre">renpy.fsdecode()</span></tt></a></li>
+<li><a class="reference internal" href="file_python.html#renpy.fsencode" title="renpy.fsencode"><tt class="xref py py-func docutils literal"><span class="pre">renpy.fsencode()</span></tt></a></li>
+<li><a class="reference internal" href="label.html#renpy.get_all_labels" title="renpy.get_all_labels"><tt class="xref py py-func docutils literal"><span class="pre">renpy.get_all_labels()</span></tt></a></li>
+<li><a class="reference internal" href="label.html#renpy.has_label" title="renpy.has_label"><tt class="xref py py-func docutils literal"><span class="pre">renpy.has_label()</span></tt></a></li>
+<li>renpy.has_screen</li>
+<li>renpy.image_exists</li>
+<li><a class="reference internal" href="file_python.html#renpy.image_size" title="renpy.image_size"><tt class="xref py py-func docutils literal"><span class="pre">renpy.image_size()</span></tt></a></li>
+<li><a class="reference internal" href="translation.html#renpy.known_languages" title="renpy.known_languages"><tt class="xref py py-func docutils literal"><span class="pre">renpy.known_languages()</span></tt></a></li>
+<li><a class="reference internal" href="other.html#var-renpy.license"><tt class="xref std std-var docutils literal"><span class="pre">renpy.license</span></tt></a></li>
+<li><a class="reference internal" href="file_python.html#renpy.list_files" title="renpy.list_files"><tt class="xref py py-func docutils literal"><span class="pre">renpy.list_files()</span></tt></a></li>
+<li><a class="reference internal" href="file_python.html#renpy.loadable" title="renpy.loadable"><tt class="xref py py-func docutils literal"><span class="pre">renpy.loadable()</span></tt></a></li>
+<li>renpy.munged_filename</li>
+<li>renpy.partial</li>
+<li>renpy.unelide_filename</li>
+<li><a class="reference internal" href="screen_python.html#renpy.variant" title="renpy.variant"><tt class="xref py py-func docutils literal"><span class="pre">renpy.variant()</span></tt></a></li>
+<li><a class="reference internal" href="other.html#renpy.version" title="renpy.version"><tt class="xref py py-func docutils literal"><span class="pre">renpy.version()</span></tt></a></li>
+<li><a class="reference internal" href="other.html#var-renpy.version_name"><tt class="xref std std-var docutils literal"><span class="pre">renpy.version_name</span></tt></a></li>
+<li><a class="reference internal" href="other.html#var-renpy.version_only"><tt class="xref std std-var docutils literal"><span class="pre">renpy.version_only</span></tt></a></li>
+<li><a class="reference internal" href="other.html#var-renpy.version_string"><tt class="xref std std-var docutils literal"><span class="pre">renpy.version_string</span></tt></a></li>
+<li><a class="reference internal" href="other.html#var-renpy.version_tuple"><tt class="xref std std-var docutils literal"><span class="pre">renpy.version_tuple</span></tt></a></li>
+<li>repr</li>
+<li>round</li>
+<li>set</li>
+<li>slideawaydown</li>
+<li><a class="reference internal" href="transitions.html#var-slideawayleft"><tt class="xref std std-var docutils literal"><span class="pre">slideawayleft</span></tt></a></li>
+<li>slideawayright</li>
+<li>slideawayup</li>
+<li>slidedown</li>
+<li><a class="reference internal" href="transitions.html#var-slideleft"><tt class="xref std std-var docutils literal"><span class="pre">slideleft</span></tt></a></li>
+<li>slideright</li>
+<li>slideup</li>
+<li>sorted</li>
+<li><a class="reference internal" href="transitions.html#var-squares"><tt class="xref std std-var docutils literal"><span class="pre">squares</span></tt></a></li>
+<li>str</li>
+<li>sum</li>
+<li>tuple</li>
+<li>ui.callsinnewcontext</li>
+<li>ui.gamemenus</li>
+<li>ui.invokesinnewcontext</li>
+<li>ui.jumps</li>
+<li>ui.jumpsoutofcontext</li>
+<li>ui.returns</li>
+<li>unichr</li>
+<li>unicode</li>
+<li>vars</li>
+<li>vcentered</li>
+<li><a class="reference internal" href="transitions.html#var-vpunch"><tt class="xref std std-var docutils literal"><span class="pre">vpunch</span></tt></a></li>
+<li>wipedown</li>
+<li><a class="reference internal" href="transitions.html#var-wipeleft"><tt class="xref std std-var docutils literal"><span class="pre">wipeleft</span></tt></a></li>
+<li>wiperight</li>
+<li>wipeup</li>
+<li>zip</li>
+<li><a class="reference internal" href="transitions.html#var-zoomin"><tt class="xref std std-var docutils literal"><span class="pre">zoomin</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#var-zoominout"><tt class="xref std std-var docutils literal"><span class="pre">zoominout</span></tt></a></li>
+<li><a class="reference internal" href="transitions.html#var-zoomout"><tt class="xref std std-var docutils literal"><span class="pre">zoomout</span></tt></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="config.html" title="Configuration Variables"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="screen_special.html" title="Special Screen Names"
+             >previous</a> |</li>
+
+        <li> <img src="_static/logo.png" width=19 height=21 align=center>
+        <li> <a href="http://www.renpy.org/">Ren'Py Home</a> |
+        <li><a href="index.html">Ren&#39;Py Documentation</a></li> 
+      </ul>
+    </div>
+
+
+	<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+	<script type="text/javascript">
+	  google.load('search', '1', {language : 'en' });
+	  google.setOnLoadCallback(function() {
+	    var customSearchControl = new google.search.CustomSearchControl('012476843541036121001:gx3sqkoaxkm');
+	    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+	    var options = new google.search.DrawOptions();
+	    options.enableSearchboxOnly("https://www.google.com/cse?cx=012476843541036121001:gx3sqkoaxkm");
+	    customSearchControl.draw('cse-search-form', options);
+	  }, true);
+	</script>
+
+  </body>
+</html>
